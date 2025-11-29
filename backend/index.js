@@ -61,6 +61,33 @@ app.post("/note", (req, res) => {
     });
 });
 
+app.delete("/note/:id", (req, res) => {
+    const noteId = req.params.id;
+    const q = "DELETE FROM note WHERE idNote = ?";
+
+    db.query(q, [noteId], (err, data) => {
+        if (err) return res.json(err);
+        return res.json("Note has been deleted successfully.");
+    });
+});
+
+app.put("/note/:id", (req, res) => {
+    const noteId = req.params.id;
+    const q = "UPDATE note SET `title`=?, `category`=?, `desc`=?, `cover`=? WHERE idNote = ?";
+
+    const values = [
+        req.body.title,
+        req.body.category,
+        req.body.desc,
+        req.body.cover
+    ];
+
+    db.query(q, [...values, noteId], (err, data) => {
+        if (err) return res.json(err);
+        return res.json("Note has been updated successfully.");
+    });
+});
+
 // Start Server
 app.listen(8800, () => {
     console.log("Connected to backend at port 8800!");
