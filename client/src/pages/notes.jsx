@@ -38,6 +38,9 @@ const Notes = () => {
             <p>{item.desc}</p>
             <span>{item.category}</span>
             <button className='delete' onClick={()=>handleDelete(item.idNote)}>Delete</button>
+            <button className='Update'>
+              <Link to={`/update/${item.idNote}`}>Update</Link>
+            </button>
           </div>
         ))}
       </div>
