@@ -30,7 +30,7 @@ const Add = () => {
 
   return (
     <div className='form'>
-      <h1>Add New Book</h1>
+      <h1>Add New Note</h1>
 
       <input type="text" placeholder='title' name="title" onChange={handleChange} />
       <input type="text" placeholder='desc' name="desc" onChange={handleChange} />

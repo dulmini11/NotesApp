@@ -17,6 +17,15 @@ const Notes = () => {
     fetchAllNotes();
   }, []);
 
+  const handleDelete = async (id)=>{
+    try{
+      await axios.delete("http://localhost:8800/note/"+id)
+      window.location.reload()
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   return (
     <div>
       <h1>Write a new note</h1>
@@ -28,10 +37,10 @@ const Notes = () => {
             <h2>{item.title}</h2>
             <p>{item.desc}</p>
             <span>{item.category}</span>
+            <button className='delete' onClick={()=>handleDelete(item.idNote)}>Delete</button>
           </div>
         ))}
       </div>
-
       <button>
         <Link to="/add">Add new Note</Link>
       </button>
