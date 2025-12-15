@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Sidebar from "../components/Sidebar";
 
 const Notes = () => {
 
@@ -63,8 +64,10 @@ const Notes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="flex">
+      <Sidebar />
+      {/* MAIN CONTENT */}
+      <div className="flex-1 ml-2 mt-10">
 
         {/* Greeting + Digital Clock Card */}
         <div className="mb-12">
