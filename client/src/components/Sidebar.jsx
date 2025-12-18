@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"; 
 import {
   LayoutDashboard,
   FileText,
@@ -31,37 +31,41 @@ const Sidebar = () => {
       {/* TOP SECTION */}
       <div>
         {/* Profile */}
-        {expanded && (
-          <div className="flex items-center gap-3 mb-8">
-            <img
-              src={UserImage}
-              alt="profile"
-              className="w-12 h-12 rounded-full"
-            />
+        <div className="flex items-center gap-3 mb-8 justify-center">
+          <img
+            src={UserImage}
+            alt="profile"
+            className={`rounded-full transition-all duration-300 mt-8 ${
+              expanded ? "w-12 h-12" : "w-10 h-10"
+            }`}
+          />
+          {expanded && (
             <div>
               <p className="text-xs text-gray-400">Good Day 👋</p>
               <h2 className="font-semibold text-gray-800">Omi.y</h2>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* MENU */}
-        <div className="space-y-2">
-          <MenuItem icon={<LayoutDashboard size={expanded ? 18 : 28} />} label="Dashboard" expanded={expanded} />
-          <MenuItem icon={<FileText size={expanded ? 18 : 28} />} label="All Notes" expanded={expanded} />
-          <MenuItem icon={<Pin size={expanded ? 18 : 28} />} label="Pinned Notes" expanded={expanded} />
-          <MenuItem icon={<Clock size={expanded ? 18 : 28} />} label="Recent Notes" expanded={expanded} />
-          <MenuItem icon={<CheckSquare size={expanded ? 18 : 28} />} label="Checklists" expanded={expanded} />
-          <MenuItem icon={<Calendar size={expanded ? 18 : 28} />} label="Calendar" expanded={expanded} />
-          <MenuItem icon={<Tag size={expanded ? 18 : 28} />} label="Tags" expanded={expanded} />
+        <div className="space-y-2 mt-14 p-1">
+          <MenuItem icon={<LayoutDashboard />} label="Dashboard" expanded={expanded} />
+          <MenuItem icon={<FileText />} label="All Notes" expanded={expanded} />
+          <MenuItem icon={<Pin />} label="Pinned Notes" expanded={expanded} />
+          <MenuItem icon={<Clock />} label="Recent Notes" expanded={expanded} />
+          <MenuItem icon={<CheckSquare />} label="Checklists" expanded={expanded} />
+          <MenuItem icon={<Calendar />} label="Calendar" expanded={expanded} />
+          <MenuItem icon={<Tag />} label="Tags" expanded={expanded} />
         </div>
       </div>
 
       {/* BOTTOM SECTION */}
       <div className="space-y-4 flex flex-col items-center">
         {/* Create New Note */}
-        <button className="w-full bg-blue-600 text-white rounded-2xl p-4 flex items-center justify-center gap-2 shadow-md mt-4">
-          <Plus size={expanded ? 15 : 25} />
+        <button
+          className="w-full bg-[#22cb0b] text-white rounded-2xl flex items-center justify-center gap-2 shadow-md mt-4 p-3"
+        >
+          <Plus size={expanded ? 18 : 20} />
           {expanded && <span>Create New Note</span>}
         </button>
       </div>
@@ -75,9 +79,11 @@ export default Sidebar;
 const MenuItem = ({ icon, label, expanded }) => {
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all"
+      className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all"
     >
-      {icon}
+      <div className={`transition-transform duration-300 ${expanded ? "scale-50" : "scale-75"}`}>
+        {icon}
+      </div>
       {expanded && <span className="text-sm">{label}</span>}
     </div>
   );
