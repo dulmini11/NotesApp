@@ -9,6 +9,7 @@ import {
   Tag,
   Plus,
 } from "lucide-react";
+import { Link } from 'react-router-dom';
 import UserImage from "../assets/user.jpg";
 
 const Sidebar = () => {
@@ -62,12 +63,21 @@ const Sidebar = () => {
       {/* BOTTOM SECTION */}
       <div className="space-y-4 flex flex-col items-center">
         {/* Create New Note */}
-        <button
-          className="w-full bg-[#22cb0b] text-white rounded-2xl flex items-center justify-center gap-2 shadow-md mt-4 p-3"
+        <Link
+          to="/add"
+          className={`bg-[#22cb0b] text-white rounded-2xl flex items-center justify-center shadow-md mt-4
+            transition-all duration-300
+            ${expanded ? "w-full p-3 gap-2" : "w-12 h-12 p-0"}
+          `}
         >
-          <Plus size={expanded ? 18 : 20} />
-          {expanded && <span>Create New Note</span>}
-        </button>
+          <Plus className="w-6 h-6" />
+
+          {expanded && (
+            <span className="whitespace-nowrap">
+              Add New Note
+            </span>
+          )}
+        </Link>
       </div>
     </aside>
   );
