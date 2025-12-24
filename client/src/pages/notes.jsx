@@ -37,6 +37,11 @@ const Notes = () => {
     return "Welcome back 🌙";
   };
 
+  const capitalizeFirst = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
   /* ----- FETCH NOTES ----- */
 
   useEffect(() => {
@@ -94,13 +99,15 @@ const Notes = () => {
             >
               <div className="p-4 flex flex-col flex-grow">
                 <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
-                  {item.title}
+                  {capitalizeFirst(item.title)}
                 </h2>
+
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-grow">
-                  {item.desc}
+                  {capitalizeFirst(item.desc)}
                 </p>
+
                 <span className="inline-block bg-gradient-to-r from-green-100 to-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
-                  {item.category}
+                  {capitalizeFirst(item.category)}
                 </span>
                 <div className="flex gap-2 mt-auto">
                   <button

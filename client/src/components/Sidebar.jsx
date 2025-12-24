@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import UserImage from "../assets/user.jpg";
 
 const Sidebar = () => {
-  const [isMinimized, setIsMinimized] = useState(true); // default minimized
+  const [isMinimized] = useState(true); // default minimized
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => setIsHovered(true);
