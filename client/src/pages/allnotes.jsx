@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { Pin } from "lucide-react";
+import { Pin, Calendar } from "lucide-react";
 
 const AllNotes = () => {
 
@@ -107,6 +107,16 @@ const AllNotes = () => {
                 <span className="inline-block bg-gradient-to-r from-green-100 to-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
                   {capitalizeFirst(item.category)}
                 </span>
+
+                {/* Date */}
+                <div className="flex items-center text-xs text-gray-500 mb-4">
+                  <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                  {new Date(item.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </div>
 
                 <div className="flex gap-2 mt-auto">
                   <button
