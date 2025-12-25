@@ -3,39 +3,10 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 
-const Notes = () => {
+const AllNotes = () => {
 
   /* ---- STATE ---- */
-
-  // Store notes data
   const [notes, setNotes] = useState([]);
-
-  // Store current time (for clock & greeting)
-  const [time, setTime] = useState(new Date());
-
-
-  /* --- DIGITAL CLOCK --- */
-
-  // Update time every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
-    // Cleanup interval when component unmounts
-    return () => clearInterval(timer);
-  }, []);
-
-  // Format numbers to always show 2 digits
-  const format = (num) => (num < 10 ? "0" + num : num);
-
-  // Return greeting based on current hour
-  const getGreeting = (hour) => {
-    if (hour >= 5 && hour < 12) return "Good Morning ☀️";
-    if (hour >= 12 && hour < 17) return "Good Afternoon 🌤️";
-    if (hour >= 17 && hour < 21) return "Good Evening 🌆";
-    return "Welcome back 🌙";
-  };
 
   const capitalizeFirst = (text) => {
     if (!text) return "";
@@ -43,7 +14,6 @@ const Notes = () => {
   };
 
   /* ----- FETCH NOTES ----- */
-
   useEffect(() => {
     const fetchAllNotes = async () => {
       try {
@@ -56,9 +26,7 @@ const Notes = () => {
     fetchAllNotes();
   }, []);
 
-
   /* ---- DELETE NOTE ---- */
-
   const handleDelete = async (id) => {
     try {
       await axios.delete("http://localhost:8800/note/" + id);
@@ -71,27 +39,9 @@ const Notes = () => {
   return (
     <div className="flex">
       <Sidebar />
-      {/* MAIN CONTENT */}
       <div className="flex-1 mt-10 p-4">
 
-        {/* Greeting + Digital Clock Card */}
-        <div className="mb-12">
-          <div className="bg-gradient-to-r from-green-600 to-green-300 rounded-2xl p-6 text-white shadow-xl max-w-xl mx-auto">
-            
-            <h2 className="text-2xl font-semibold mb-2">
-              {getGreeting(time.getHours())}
-            </h2>
-
-            {/* Digital Clock */}
-            <div className="text-4xl font-mono tracking-wider">
-              {format(time.getHours())} :
-              {format(time.getMinutes())} :
-              {format(time.getSeconds())}
-            </div>
-          </div>
-        </div>
-
-                {/* Add New Note Button */}
+        {/* Add New Note Button */}
         <div className="text-center mb-5">
           <Link
             to="/add"
@@ -104,8 +54,9 @@ const Notes = () => {
           </Link>
         </div>
 
+        {/* Notes Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {notes.slice(0, 10).map(item => ( /*Shows only first 10 notes */
+          {notes.slice(0, 10).map(item => (
             <div
               key={item.idNote}
               className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 flex flex-col"
@@ -122,6 +73,7 @@ const Notes = () => {
                 <span className="inline-block bg-gradient-to-r from-green-100 to-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
                   {capitalizeFirst(item.category)}
                 </span>
+
                 <div className="flex gap-2 mt-auto">
                   <button
                     onClick={() => handleDelete(item.idNote)}
@@ -142,20 +94,9 @@ const Notes = () => {
             </div>
           ))}
         </div>
-
-        {/* Add New Note Button */}
-        <div className="text-center">
-          <Link
-            to="/allnotes"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-500 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-          >
-            Show All
-          </Link>
-        </div>
-
       </div>
     </div>
   );
 };
 
-export default Notes;
+export default AllNotes;

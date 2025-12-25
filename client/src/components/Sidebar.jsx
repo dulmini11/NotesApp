@@ -51,7 +51,7 @@ const Sidebar = () => {
         {/* MENU */}
         <div className="space-y-2 mt-14 p-1">
           <MenuItem icon={<LayoutDashboard />} label="Dashboard" to="/" expanded={expanded} />
-          <MenuItem icon={<FileText />} label="All Notes" to="/notes" expanded={expanded} />
+          <MenuItem icon={<FileText />} label="All Notes" to="/allnotes" expanded={expanded} />
           <MenuItem icon={<Pin />} label="Pinned Notes" to="/pinned" expanded={expanded} />
           <MenuItem icon={<Clock />} label="Recent Notes" to="/recent" expanded={expanded} />
           <MenuItem icon={<CheckSquare />} label="Checklists" to="/checklists" expanded={expanded} />
