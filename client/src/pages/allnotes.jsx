@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import { Pin, Calendar } from "lucide-react";
+import SearchBar from "../components/SearchBar";
 
 const AllNotes = () => {
 
@@ -51,12 +52,35 @@ const AllNotes = () => {
     }
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+  // Filter notes based on search query
+  const filteredNotes = notes.filter(note => {
+    const query = searchQuery.toLowerCase();
+    const title = (note.title || "").toLowerCase();
+    const desc = (note.desc || "").toLowerCase();
+    const category = (note.category || "").toLowerCase();
+    const date = new Date(note.createdAt).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).toLowerCase();
+
+    return (
+      title.includes(query) ||
+      desc.includes(query) ||
+      category.includes(query) ||
+      date.includes(query)
+    );
+  });
+
   return (
     <div className="flex">
       <Sidebar />
       <div className="flex-1 mt-10 p-4">
-        <h1 className="text-3xl font-bold mb-12 text-gray-800">All Notes</h1>
-
+        {/* Header with Title and Button */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-gray-800">All Notes</h1>
+  
         {/* Add New Note Button */}
         <div className="text-center mb-5">
           <Link
@@ -66,17 +90,24 @@ const AllNotes = () => {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Add New Note
+            New Note
           </Link>
         </div>
+        </div>
+
+        {/* Add SearchBar here */}
+        <SearchBar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          resultsCount={filteredNotes.length}
+        />
 
         {/* Notes Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {notes
-            .slice() // create a copy to avoid mutating state
-            .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)) // pinned first
-            .slice(0, 10) // show first 10 notes
-            .map(item => (
+        {filteredNotes
+          .slice()
+          .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
+          .map(item => (
               <div
                 key={item.idNote}
                 className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 flex flex-col"

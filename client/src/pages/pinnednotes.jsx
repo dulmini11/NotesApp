@@ -3,9 +3,32 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import { Pin, Calendar } from "lucide-react";
+import SearchBar from "../components/SearchBar";
 
 const PinnedNotes = () => {
   const [notes, setNotes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+    
+  // Filter notes based on search query
+    
+  const filteredNotes = notes.filter(note => {
+  const query = searchQuery.toLowerCase();
+  const title = (note.title || "").toLowerCase();
+  const desc = (note.desc || "").toLowerCase();
+  const category = (note.category || "").toLowerCase();
+  const date = new Date(note.createdAt).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+  }).toLowerCase();
+ 
+  return (
+      title.includes(query) ||
+      desc.includes(query) ||
+      category.includes(query) ||
+      date.includes(query)
+  );  
+});
 
   // Fetch pinned notes
   useEffect(() => {
@@ -60,12 +83,19 @@ const PinnedNotes = () => {
       <div className="flex-1 mt-10 p-4">
         <h1 className="text-3xl font-bold mb-12 text-gray-800">Pinned Notes</h1>
 
+        {/* Add SearchBar here */}
+        <SearchBar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          resultsCount={filteredNotes.length}
+        />
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           {notes.length === 0 && (
             <p className="text-gray-500 col-span-full text-center">No pinned notes available.</p>
           )}
-          {notes
-            .slice() // copy array
+          {filteredNotes
+            .slice()
             .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
             .map(item => (
               <div
