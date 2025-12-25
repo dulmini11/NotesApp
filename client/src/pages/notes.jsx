@@ -72,7 +72,7 @@ const Notes = () => {
     <div className="flex">
       <Sidebar />
       {/* MAIN CONTENT */}
-      <div className="flex-1 ml-5 mt-10">
+      <div className="flex-1 mt-10 p-4">
 
         {/* Greeting + Digital Clock Card */}
         <div className="mb-12">

@@ -1,4 +1,4 @@
-import { useState } from "react"; 
+import { useState } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -50,13 +50,13 @@ const Sidebar = () => {
 
         {/* MENU */}
         <div className="space-y-2 mt-14 p-1">
-          <MenuItem icon={<LayoutDashboard />} label="Dashboard" expanded={expanded} />
-          <MenuItem icon={<FileText />} label="All Notes" expanded={expanded} />
-          <MenuItem icon={<Pin />} label="Pinned Notes" expanded={expanded} />
-          <MenuItem icon={<Clock />} label="Recent Notes" expanded={expanded} />
-          <MenuItem icon={<CheckSquare />} label="Checklists" expanded={expanded} />
-          <MenuItem icon={<Calendar />} label="Calendar" expanded={expanded} />
-          <MenuItem icon={<Tag />} label="Tags" expanded={expanded} />
+          <MenuItem icon={<LayoutDashboard />} label="Dashboard" to="/" expanded={expanded} />
+          <MenuItem icon={<FileText />} label="All Notes" to="/notes" expanded={expanded} />
+          <MenuItem icon={<Pin />} label="Pinned Notes" to="/pinned" expanded={expanded} />
+          <MenuItem icon={<Clock />} label="Recent Notes" to="/recent" expanded={expanded} />
+          <MenuItem icon={<CheckSquare />} label="Checklists" to="/checklists" expanded={expanded} />
+          <MenuItem icon={<Calendar />} label="Calendar" to="/calendar" expanded={expanded} />
+          <MenuItem icon={<Tag />} label="Tags" to="/tags" expanded={expanded} />
         </div>
       </div>
 
@@ -86,15 +86,19 @@ const Sidebar = () => {
 export default Sidebar;
 
 /* MENU ITEM COMPONENT */
-const MenuItem = ({ icon, label, expanded }) => {
+const MenuItem = ({ icon, label, expanded, to }) => {
   return (
-    <div
-      className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all"
-    >
-      <div className={`transition-transform duration-300 ${expanded ? "scale-50" : "scale-75"}`}>
-        {icon}
+    <Link to={to}>
+      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all">
+        <div
+          className={`transition-transform duration-300 ${
+            expanded ? "scale-50" : "scale-75"
+          }`}
+        >
+          {icon}
+        </div>
+        {expanded && <span className="text-sm">{label}</span>}
       </div>
-      {expanded && <span className="text-sm">{label}</span>}
-    </div>
+    </Link>
   );
 };
