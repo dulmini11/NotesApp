@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
+import { Pin } from "lucide-react";
 
 const AllNotes = () => {
 
@@ -36,6 +37,20 @@ const AllNotes = () => {
     }
   };
 
+  /* ---- PIN NOTE ---- */
+  const handlePin = async (id, currentStatus) => {
+    try {
+      await axios.put(`http://localhost:8800/note/${id}/pin`, {
+        isPinned: !currentStatus,
+      });
+      // Refresh notes after pin/unpin
+      const res = await axios.get("http://localhost:8800/note");
+      setNotes(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -56,15 +71,33 @@ const AllNotes = () => {
 
         {/* Notes Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {notes.slice(0, 10).map(item => (
-            <div
-              key={item.idNote}
-              className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 flex flex-col"
-            >
+          {notes
+            .slice() // create a copy to avoid mutating state
+            .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)) // pinned first
+            .slice(0, 10) // show first 10 notes
+            .map(item => (
+              <div
+                key={item.idNote}
+                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 flex flex-col"
+              >
               <div className="p-4 flex flex-col flex-grow">
-                <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
-                  {capitalizeFirst(item.title)}
-                </h2>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-green-600 transition-colors">
+                    {capitalizeFirst(item.title)}
+                  </h2>
+
+                  {/* Pin Button */}
+                  <button
+                    onClick={() => handlePin(item.idNote, item.isPinned)}
+                    className={`flex items-center justify-center p-2 rounded-3xl shadow-md transition-all duration-200 transform hover:scale-105 ${
+                      item.isPinned
+                        ? "bg-yellow-400 text-white hover:bg-yellow-500"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    }`}
+                  >
+                    <Pin className={`w-3 h-3 ${item.isPinned ? "text-white" : "text-gray-800"}`} />
+                  </button>
+                </div>
 
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-grow">
                   {capitalizeFirst(item.desc)}
