@@ -55,6 +55,7 @@ const AllNotes = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 mt-10 p-4">
+        <h1 className="text-3xl font-bold mb-12 text-gray-800">All Notes</h1>
 
         {/* Add New Note Button */}
         <div className="text-center mb-5">

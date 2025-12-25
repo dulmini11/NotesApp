@@ -3,6 +3,7 @@ import Notes from "./pages/notes"
 import Add from "./pages/add"
 import Update from "./pages/update"
 import AllNotes from "./pages/allnotes";
+import PinnedNotes from "./pages/pinnednotes";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/add" element={<Add/>}/>
         <Route path="/update/:id" element={<Update/>}/>
         <Route path="/allnotes" element={<AllNotes/>}/>
+        <Route path="/pinned" element={<PinnedNotes/>}/>
       </Routes>
       </BrowserRouter>
     </div>
