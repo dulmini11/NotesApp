@@ -88,6 +88,18 @@ app.put("/note/:id", (req, res) => {
     });
 });
 
+// Pin or unpin a note
+app.put("/note/:id/pin", async (req, res) => {
+  const noteId = req.params.id;
+  const { isPinned } = req.body; // true or false
+  try {
+    await db.query("UPDATE note SET isPinned = ? WHERE idNote = ?", [isPinned, noteId]);
+    res.status(200).json({ message: "Note pin status updated" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 // Start Server
 app.listen(8800, () => {
     console.log("Connected to backend at port 8800!");
