@@ -111,3 +111,15 @@ app.put("/note/:id/pin", (req, res) => {
 app.listen(8800, () => {
     console.log("Connected to backend at port 8800!");
 });
+
+// Get Single Note by ID
+app.get("/note/:id", (req, res) => {
+    const noteId = req.params.id;
+    const q = "SELECT * FROM note WHERE idNote = ?";
+
+    db.query(q, [noteId], (err, data) => {
+        if (err) return res.json(err);
+        if (data.length === 0) return res.status(404).json({ message: "Note not found" });
+        return res.json(data[0]);
+    });
+});
