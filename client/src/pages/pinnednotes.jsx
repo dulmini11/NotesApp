@@ -66,12 +66,18 @@ const PinnedNotes = () => {
       await axios.put(`http://localhost:8800/note/${id}/pin`, {
         isPinned: !currentStatus,
       });
-      // Update local state
-      setNotes(prev =>
-        prev.map(note =>
-          note.idNote === id ? { ...note, isPinned: !currentStatus } : note
-        )
-      );
+      
+      // If unpinning (currentStatus is true), remove from list
+      if (currentStatus) {
+        setNotes(prev => prev.filter(note => note.idNote !== id));
+      } else {
+        // If pinning, update the state
+        setNotes(prev =>
+          prev.map(note =>
+            note.idNote === id ? { ...note, isPinned: !currentStatus } : note
+          )
+        );
+      }
     } catch (err) {
       console.log(err);
     }
