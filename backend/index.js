@@ -89,15 +89,22 @@ app.put("/note/:id", (req, res) => {
 });
 
 // Pin or unpin a note
-app.put("/note/:id/pin", async (req, res) => {
+app.put("/note/:id/pin", (req, res) => {
   const noteId = req.params.id;
   const { isPinned } = req.body; // true or false
-  try {
-    await db.query("UPDATE note SET isPinned = ? WHERE idNote = ?", [isPinned, noteId]);
-    res.status(200).json({ message: "Note pin status updated" });
-  } catch (err) {
-    res.status(500).json(err);
-  }
+  
+  const q = "UPDATE note SET isPinned = ? WHERE idNote = ?";
+  
+  db.query(q, [isPinned, noteId], (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json({ 
+      message: "Note pin status updated",
+      isPinned: isPinned 
+    });
+  });
 });
 
 // Start Server
