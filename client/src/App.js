@@ -4,6 +4,7 @@ import Add from "./pages/add"
 import Update from "./pages/update"
 import AllNotes from "./pages/allnotes";
 import PinnedNotes from "./pages/pinnednotes";
+import ViewNote from "./pages/ViewNote";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/update/:id" element={<Update/>}/>
         <Route path="/allnotes" element={<AllNotes/>}/>
         <Route path="/pinned" element={<PinnedNotes/>}/>
+        <Route path="/view/:id" element={<ViewNote />} />
       </Routes>
       </BrowserRouter>
     </div>
