@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import { Pin, Calendar } from "lucide-react";
 
@@ -13,6 +13,7 @@ const Notes = () => {
 
   // Store current time (for clock & greeting)
   const [time, setTime] = useState(new Date());
+  const navigate = useNavigate();
 
   /* --- DIGITAL CLOCK --- */
 
@@ -129,7 +130,8 @@ const Notes = () => {
             .map(item => (
               <div
                 key={item.idNote}
-                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 flex flex-col"
+                onClick={() => navigate(`/view/${item.idNote}`)}
+                className="group cursor-pointer bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border hover:border-green-200 hover:-translate-y-2 flex flex-col"
               >
               <div className="p-4 flex flex-col flex-grow">
                 <div className="flex items-center justify-between mb-2">
