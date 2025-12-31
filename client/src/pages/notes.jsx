@@ -14,6 +14,7 @@ const Notes = () => {
   // Store current time (for clock & greeting)
   const [time, setTime] = useState(new Date());
   const navigate = useNavigate();
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   /* --- DIGITAL CLOCK --- */
 
@@ -263,16 +264,19 @@ const Notes = () => {
                         key={item.idNote}
                         className="group relative cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-gray-100 hover:border-green-300 hover:-translate-y-2"
                       >
-                        {/* Pin Button */}
+                        {/* Pin Button - Top Left */}
                         <button
-                          onClick={() => handlePin(item.idNote, item.isPinned)}
-                          className={`flex items-center justify-center p-2 rounded-3xl shadow-md transition-all duration-200 transform hover:scale-105 ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePin(item.idNote, item.isPinned);
+                          }}
+                          className={`absolute top-3 right-3 z-10 flex items-center justify-center w-9 h-9 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110 ${
                             item.isPinned
                               ? "bg-yellow-400 text-white hover:bg-yellow-500"
-                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                              : "bg-white text-gray-600 hover:bg-gray-100"
                           }`}
                         >
-                          <Pin className={`w-3 h-3 ${item.isPinned ? "text-white" : "text-gray-800"}`} />
+                          <Pin className={`w-4 h-4 ${item.isPinned ? "text-white" : "text-gray-700"}`} />
                         </button>
 
                         <div 
