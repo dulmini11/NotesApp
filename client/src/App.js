@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Notes from "./pages/notes"
-import Add from "./pages/add"
-import Update from "./pages/update"
+import Notes from "./pages/notes";
+import Add from "./pages/add";
+import Update from "./pages/update";
 import AllNotes from "./pages/allnotes";
 import PinnedNotes from "./pages/pinnednotes";
 import ViewNote from "./pages/ViewNote";
+import CalendarPage from "./pages/CalendarPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/allnotes" element={<AllNotes/>}/>
         <Route path="/pinned" element={<PinnedNotes/>}/>
         <Route path="/view/:id" element={<ViewNote />} />
+        <Route path="/calendar" element={<CalendarPage />} />
       </Routes>
       </BrowserRouter>
     </div>
