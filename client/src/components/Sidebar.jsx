@@ -3,10 +3,10 @@ import {
   LayoutDashboard,
   FileText,
   Pin,
-  Clock,
+  Trash2,
   CheckSquare,
   Calendar,
-  Tag,
+  Lock,
   Plus,
 } from "lucide-react";
 import { Link } from 'react-router-dom';
@@ -53,10 +53,10 @@ const Sidebar = () => {
           <MenuItem icon={<LayoutDashboard />} label="Dashboard" to="/" expanded={expanded} />
           <MenuItem icon={<FileText />} label="All Notes" to="/allnotes" expanded={expanded} />
           <MenuItem icon={<Pin />} label="Pinned Notes" to="/pinned" expanded={expanded} />
-          <MenuItem icon={<Clock />} label="Recent Notes" to="/recent" expanded={expanded} />
+          <MenuItem icon={<Lock />} label="Locked Notes" to="/locked" expanded={expanded} />
           <MenuItem icon={<CheckSquare />} label="Checklists" to="/checklists" expanded={expanded} />
           <MenuItem icon={<Calendar />} label="Calendar" to="/calendar" expanded={expanded} />
-          <MenuItem icon={<Tag />} label="Tags" to="/tags" expanded={expanded} />
+          <MenuItem icon={<Trash2 />} label="Trash" to="/trash" expanded={expanded} />
         </div>
       </div>
 

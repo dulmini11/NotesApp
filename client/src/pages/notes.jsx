@@ -155,10 +155,6 @@ const Notes = () => {
 
   return (
     <div className="flex bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 min-h-screen">
-      {/* Animated background elements */}
-      <div className="fixed top-0 left-0 w-96 h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-      <div className="fixed bottom-0 right-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-
       <Sidebar />
 
       {/* MAIN CONTENT */}
