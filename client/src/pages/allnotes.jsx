@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { Pin, Calendar } from "lucide-react";
+import { Pin, Calendar, Sparkles  } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 
 const AllNotes = () => {
@@ -283,7 +283,19 @@ const AllNotes = () => {
           sortOrder={sortOrder}
           setSortOrder={setSortOrder}
         />
-        {renderContent()}
+
+        {displayNotes.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
+              <Sparkles className="w-12 h-12 text-gray-400" />
+            </div>
+            <p className="text-gray-500 font-medium">
+              No notes yet. Create your first note!
+            </p>
+          </div>
+        ) : (
+          renderContent()
+        )}
       </div>
     </div>
   );
