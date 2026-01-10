@@ -7,9 +7,9 @@ const app = express();
 // MySQL Connection
 const db = mysql.createConnection({
     host: "localhost",
-    user: "nodeuser",
-    password: "mydulsQl@87",
-    database: "test",
+    user: "root",
+    password: "",
+    database: "node_app",
     port: 3307 
 });
 

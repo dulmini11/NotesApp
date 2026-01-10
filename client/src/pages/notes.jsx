@@ -217,18 +217,19 @@ const Notes = () => {
           
           {/* LEFT: Notes Section */}
           <div className="flex-1">
-            {/* Add New Note Button */}
-            <div className="mb-6">
-              <Link
-                to="/add"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-black py-5 px-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-                </svg>
-                Create New Note
-              </Link>
-            </div>
+            {notes.length >= 1 && (
+                <div className="mb-4 flex">{/* Add New Note Button */}
+                  <Link
+                    to="/add"
+                    className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create New Note
+                  </Link>
+                </div>
+            )}
 
             {/* Notes Grid */}
             <div className="relative group mb-6">
@@ -331,6 +332,19 @@ const Notes = () => {
                       <Sparkles className="w-12 h-12 text-gray-400" />
                     </div>
                     <p className="text-gray-500 font-medium">No notes yet. Create your first note!</p>
+
+                    {/* Add New Note Button */}
+                    <div className="mt-6 flex justify-center">
+                      <Link
+                        to="/add"
+                        className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create New Note
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
@@ -460,7 +474,6 @@ const Notes = () => {
                 )}
               </div>
             </div>
-
           </div>
         </div>
       </div>
