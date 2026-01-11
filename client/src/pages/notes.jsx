@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { Pin, Calendar, ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye } from "lucide-react";
+import { Pin, Calendar, ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText } from "lucide-react";
+import LeafVideo from "../assets/leaf1.mp4";
 
 const Notes = () => {
 
@@ -163,53 +164,91 @@ const Notes = () => {
         {/* Hero Section with Clock */}
         <div className="mb-8">
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition"></div>
-            <div className="relative bg-gradient-to-br from-[#1ab80a] via-green-500 to-emerald-600 rounded-3xl p-8 text-white shadow-2xl overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
+            {/* Enhanced Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700 animate-pulse"></div>
+            {/* Main Card */}
+            <div className="relative bg-gradient-to-br from-[#491b04] via-[#4d1c02] to-black rounded-[2rem] p-10 text-white shadow-2xl overflow-hidden border border-white/10">
+              {/* Animated Background Orbs */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-white/10 to-transparent rounded-full -mr-48 -mt-48 blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-white/5 to-transparent rounded-full -ml-36 -mb-36 blur-2xl"></div>
+              <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
               
-              <div className="relative z-10 flex items-center justify-between">
+              <div className="relative z-10 flex items-center justify-between gap-8">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="text-5xl">{getGreetingEmoji(time.getHours())}</div>
-                    <h2 className="text-4xl font-black tracking-tight">
-                      {getGreeting(time.getHours())}
-                    </h2>
-                  </div>
-                  <p className="text-white/90 text-lg font-medium mb-6">
-                    {time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                  </p>
-
-                  {/* Stats Row */}
-                  <div className="flex gap-6">
-                    <div className="bg-white/20 backdrop-blur-md rounded-2xl px-6 py-4 border border-white/30">
-                      <div className="text-3xl font-black mb-1">{notes.length}</div>
-                      <div className="text-sm text-white/90 font-medium">Total Notes</div>
+                  {/* Greeting Section */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-4">
+                      <div className="text-5xl transform transition-transform duration-300 hover:scale-110">
+                        {getGreetingEmoji(time.getHours())}
+                      </div>
+                      <h2 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                        {getGreeting(time.getHours())}
+                      </h2>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-md rounded-2xl px-6 py-4 border border-white/30">
-                      <div className="text-3xl font-black mb-1">{pinnedCount}</div>
-                      <div className="text-sm text-white/90 font-medium">Pinned</div>
+                    <p className="text-white/80 text-xl font-semibold ml-[5.5rem] tracking-wide">
+                      {time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                    <div className="text-2xl font-mono font-black tracking-wider ml-[5.5rem] tabular-nums">
+                      <span className="inline-block hover:text-emerald-200 transition-colors">{format(time.getHours())}</span>
+                      <span className="animate-pulse text-white/60 mx-0.5">:</span>
+                      <span className="inline-block hover:text-emerald-200 transition-colors">{format(time.getMinutes())}</span>
+                      <span className="animate-pulse text-white/60 mx-0.5">:</span>
+                      <span className="inline-block hover:text-emerald-200 transition-colors">{format(time.getSeconds())}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Digital Clock */}
-                <div className="bg-white/20 backdrop-blur-md rounded-3xl p-8 border border-white/30 shadow-2xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-6 h-6 text-white" />
-                    <span className="text-sm font-bold text-white/90 tracking-wider uppercase">Live Time</span>
-                  </div>
-                  <div className="text-6xl font-mono font-black tracking-wider">
-                    {format(time.getHours())}
-                    <span className="animate-pulse">:</span>
-                    {format(time.getMinutes())}
-                    <span className="animate-pulse">:</span>
-                    {format(time.getSeconds())}
+                {/* Right Side Container */}
+                <div className="flex flex-col items-center gap-2 mr-28">
+                  {/* Compact Stats */}
+                  <div className="flex flex-col gap-4">
+                    
+                    {/* Notes */}
+                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-2 border border-gray-300/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold leading-none mb-0.5">
+                            {notes.length}
+                          </div>
+                          <div className="text-[10px] text-white/70 font-medium uppercase tracking-wider">
+                            Notes
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pinned */}
+                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-2 border border-gray-300/10 hover:bg-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center">
+                          <Pin className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold leading-none mb-0.5">
+                            {pinnedCount}
+                          </div>
+                          <div className="text-[10px] text-white/70 font-medium uppercase tracking-wider">
+                            Pinned
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <video
+            src={LeafVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute top-3 right-3 w-52 h-72 pointer-events-none mix-blend-screen"
+          />
         </div>
 
         {/* Main Layout: Notes + Sidebar Widgets */}
