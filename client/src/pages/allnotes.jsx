@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import { Pin, Calendar, Sparkles  } from "lucide-react";
 import SearchBar from "../components/SearchBar";
+import AllNote from "../assets/allnote.mp4";
 
 const AllNotes = () => {
   const navigate = useNavigate();
@@ -219,7 +220,7 @@ const AllNotes = () => {
       const grouped = groupByDate();
       return Object.keys(grouped).sort((a, b) => sortOrder === 'desc' ? new Date(b) - new Date(a) : new Date(a) - new Date(b)).map(date => (
         <div key={date} className="mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+          <div className="bg-white p-6 mt-16 rounded-xl shadow-lg">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 px-5 py-3 rounded-r-xl">
                 <Calendar className="w-5 h-5 text-green-600" />
@@ -261,9 +262,19 @@ const AllNotes = () => {
       <Sidebar />
       <div className="flex-1 mt-10 p-4">
         <div className="flex items-center justify-between mb-8">
+          
           <h1 className="text-4xl font-bold text-gray-800">All Notes</h1>
+          
           {notes.length >= 1 && (
             <div className="text-center mb-5">
+              <video
+                src={AllNote}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute top-0 right-0 w-[600px] h-[340px] pointer-events-none mix-blend-screen"
+              />
               <Link
                 to="/add"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-500 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"

@@ -13,7 +13,7 @@ const CalendarPage = () => {
   const [modalDate, setModalDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /* ================= FETCH NOTES ================= */
+  /* FETCH NOTES */
   useEffect(() => {
     fetch("http://localhost:8800/note")
       .then((res) => res.json())
@@ -21,7 +21,7 @@ const CalendarPage = () => {
       .catch(console.error);
   }, []);
 
-  /* ================= DERIVED DATA ================= */
+  /* DERIVED DATA */
   const categories = useMemo(
     () => [...new Set(notes.map((n) => n.category))],
     [notes]
@@ -32,7 +32,7 @@ const CalendarPage = () => {
     year: "numeric",
   });
 
-  /* ================= CALENDAR LOGIC ================= */
+  /*  CALENDAR LOGIC */
   const getMonthDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -89,7 +89,7 @@ const CalendarPage = () => {
     );
   };
 
-  /* ================= HANDLERS ================= */
+  /* HANDLERS */
   const toggleCategory = (cat) =>
     setSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
@@ -101,7 +101,7 @@ const CalendarPage = () => {
     setIsModalOpen(true);
   };
 
-  /* ================= UI ================= */
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />

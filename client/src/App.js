@@ -7,7 +7,7 @@ import AllNotes from "./pages/allnotes";
 import PinnedNotes from "./pages/pinnednotes";
 import ViewNote from "./pages/ViewNote";
 import CalendarPage from "./pages/CalendarPage";
-import LoadingPage from "./pages/LoadingPage"; // Import the loading page
+import LoadingPage from "./pages/LoadingPage";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
