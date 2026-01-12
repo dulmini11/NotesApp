@@ -155,7 +155,7 @@ const Notes = () => {
   const pinnedCount = notes.filter(note => note.isPinned).length;
 
   return (
-    <div className="flex bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 min-h-screen">
+    <div className="flex bg-gradient-to-br from-lime-50 to-teal-50 min-h-screen">
       <Sidebar />
 
       {/* MAIN CONTENT */}
@@ -165,7 +165,7 @@ const Notes = () => {
         <div className="mb-8">
           <div className="relative group">
             {/* Enhanced Glow Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700 animate-pulse"></div>
+            <div className="absolute inset-0 rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700 animate-pulse"></div>
             {/* Main Card */}
             <div className="relative bg-gradient-to-br from-[#491b04] via-[#4d1c02] to-black rounded-[2rem] p-10 text-white shadow-2xl overflow-hidden border border-white/10">
               {/* Animated Background Orbs */}
@@ -453,8 +453,8 @@ const Notes = () => {
 
             {/* Recent Notes Widget */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-300 to-teal-300 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition"></div>
-              <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-green-100">
+              <div className="absolute inset-0 bg-gradient-to-r from-lime-50 to-green-300 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition"></div>
+              <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-4 shadow-xl border border-green-100">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-2.5 rounded-xl shadow-lg">
                     <Clock className="w-5 h-5 text-white" />
@@ -462,42 +462,30 @@ const Notes = () => {
                   <h3 className="text-lg font-black text-gray-800">Recent Notes</h3>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {recentNotes.length > 0 ? (
-                    recentNotes.map(note => (
+                    recentNotes.slice(0, 4).map(note => (
                       <div
                         key={note.idNote}
                         onClick={() => navigate(`/view/${note.idNote}`)}
-                        className="group/item cursor-pointer bg-gradient-to-r from-gray-50 to-gray-100 hover:from-green-50 hover:to-emerald-50 rounded-xl p-4 transition-all border border-gray-200 hover:border-green-300 hover:shadow-md"
+                        className="group/item cursor-pointer bg-gradient-to-r from-gray-50 to-gray-100 hover:from-green-50 hover:to-emerald-50 rounded-lg p-2 transition-all border border-gray-200 hover:border-green-300 hover:shadow-sm"
                       >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h4 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover/item:text-green-600 transition-colors flex-1">
-                            {capitalizeFirst(note.title)}
-                          </h4>
-                          {note.isPinned && (
-                            <Pin className="w-3 h-3 text-yellow-500 flex-shrink-0" />
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-600 line-clamp-2 mb-2">
-                          {capitalizeFirst(note.desc)}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-lg">
-                            {capitalizeFirst(note.category)}
-                          </span>
-                          <span className="text-xs text-gray-500 font-medium">
-                            {new Date(note.createdAt).toLocaleDateString(undefined, {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </span>
-                        </div>
+                        <h4 className="text-xs font-semibold text-gray-800 line-clamp-1 group-hover/item:text-green-600 transition-colors">
+                          {capitalizeFirst(note.title)}
+                        </h4>
+
+                        <span className="text-[10px] text-gray-500">
+                          {new Date(note.createdAt).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-6">
-                      <Eye className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500 font-medium">No recent notes</p>
+                    <div className="text-center py-4">
+                      <Eye className="w-6 h-6 text-gray-300 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500">No recent notes</p>
                     </div>
                   )}
                 </div>
