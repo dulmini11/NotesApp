@@ -8,6 +8,7 @@ import PinnedNotes from "./pages/pinnednotes";
 import ViewNote from "./pages/ViewNote";
 import CalendarPage from "./pages/CalendarPage";
 import LoadingPage from "./pages/LoadingPage";
+import Checklists from "./pages/checklists";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,7 @@ function App() {
           <Route path="/pinned" element={<PinnedNotes/>}/>
           <Route path="/view/:id" element={<ViewNote />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/checklists" element={<Checklists />} />
         </Routes>
       </BrowserRouter>
     </div>
