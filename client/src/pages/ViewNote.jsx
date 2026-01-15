@@ -125,7 +125,7 @@ const ViewNote = () => {
 
                 <button
                   onClick={handleDelete}
-                  className="px-6 py-3 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition"
+                  className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                   Delete
                 </button>

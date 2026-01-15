@@ -131,23 +131,23 @@ const PinnedNotes = () => {
         </div>
 
         <div className="flex gap-2 mt-auto">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(item.idNote);
-            }}
-            className="flex-1 bg-gradient-to-r from-green-600 to-[#22cb0b] hover:from-[#22cb0b] hover:to-[#0a7e04] text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-          >
-            Delete
-          </button>
+                            <Link
+                              to={`/update/${item.idNote}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            >
+                              Edit
+                            </Link>
 
-          <Link
-            onClick={(e) => e.stopPropagation()}
-            to={`/update/${item.idNote}`}
-            className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-semibold py-2 px-3 rounded-lg text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-          >
-            Update
-          </Link>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(item.idNote);
+                              }}
+                              className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            >
+                              Delete
+                            </button>
         </div>
       </div>
     </div>

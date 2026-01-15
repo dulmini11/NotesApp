@@ -342,23 +342,23 @@ const Notes = () => {
                           </div>
 
                           <div className="flex gap-2">
+                            <Link
+                              to={`/update/${item.idNote}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            >
+                              Edit
+                            </Link>
+
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDelete(item.idNote);
                               }}
-                              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                              className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                             >
                               Delete
                             </button>
-
-                            <Link
-                              to={`/update/${item.idNote}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              Edit
-                            </Link>
                           </div>
                         </div>
                       </div>
