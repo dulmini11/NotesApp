@@ -238,6 +238,8 @@ const AllNotes = () => {
                 loop
                 muted
                 playsInline
+                disablePictureInPicture
+                controlsList="nodownload nofullscreen noremoteplayback"
                 className="absolute top-0 right-0 w-[600px] h-[340px] pointer-events-none mix-blend-screen"
               />
               <Link

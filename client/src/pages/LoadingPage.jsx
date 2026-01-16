@@ -39,6 +39,8 @@ export default function LoadingPage() {
             loop
             muted
             playsInline
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
             className="w-full h-full object-cover"
           >
             <source src="/src/assets/leafpad.mp4" type="video/mp4" />

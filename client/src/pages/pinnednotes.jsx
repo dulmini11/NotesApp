@@ -3,6 +3,7 @@ import axios from 'axios';
 import Sidebar from "../components/Sidebar";
 import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
+import pinnoteVideo from "../assets/pinnote.mp4";
 
 const PinnedNotes = () => {
   const [notes, setNotes] = useState([]);
@@ -78,7 +79,21 @@ const PinnedNotes = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1 mt-10 p-4">
+      <div className="flex-1 mt-10 p-4 relative">
+        {/* Video in right corner */}
+        <div className="fixed top-0 right-4 z-50">
+          <video
+            src={pinnoteVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+            className="w-60 h-60 object-cover pointer-events-none"
+          />
+        </div>
+
         <h1 className="text-3xl font-bold mb-12 text-gray-800">Pinned Notes</h1>
 
         <SearchBar 

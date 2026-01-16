@@ -250,6 +250,8 @@ const Notes = () => {
             loop
             muted
             playsInline
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
             className="absolute top-3 right-3 w-52 h-72 pointer-events-none mix-blend-screen"
           />
         </div>
