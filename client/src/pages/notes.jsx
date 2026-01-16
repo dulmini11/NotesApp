@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { Pin, Calendar, ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText } from "lucide-react";
+import NoteCard from "../components/NoteCard";
+import { ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText, Pin, Calendar } from "lucide-react";
 import LeafVideo from "../assets/leaf1.mp4";
 
 const Notes = () => {
@@ -71,8 +72,7 @@ const Notes = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete("http://localhost:8800/note/" + id);
-      const res = await axios.get("http://localhost:8800/note");
-      setNotes(res.data);
+      setNotes(notes.filter(n => n.idNote !== id));
     } catch (err) {
       console.log(err);
     }
@@ -84,8 +84,11 @@ const Notes = () => {
       await axios.put(`http://localhost:8800/note/${id}/pin`, {
         isPinned: !currentStatus,
       });
-      const res = await axios.get("http://localhost:8800/note");
-      setNotes(res.data);
+      setNotes(prev =>
+        prev.map(note =>
+          note.idNote === id ? { ...note, isPinned: !currentStatus } : note
+        )
+      );
     } catch (err) {
       console.log(err);
     }
@@ -296,72 +299,12 @@ const Notes = () => {
                     .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
                     .slice(0, 9)
                     .map(item => (
-                      <div
+                      <NoteCard
                         key={item.idNote}
-                        className="group relative cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-gray-100 hover:border-green-300 hover:-translate-y-2"
-                      >
-                        {/* Pin Button - Top Left */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePin(item.idNote, item.isPinned);
-                          }}
-                          className={`absolute top-3 right-3 z-10 flex items-center justify-center w-9 h-9 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110 ${
-                            item.isPinned
-                              ? "bg-yellow-400 text-white hover:bg-yellow-500"
-                              : "bg-white text-gray-600 hover:bg-gray-100"
-                          }`}
-                        >
-                          <Pin className={`w-4 h-4 ${item.isPinned ? "text-white" : "text-gray-700"}`} />
-                        </button>
-
-                        <div 
-                          onClick={() => navigate(`/view/${item.idNote}`)}
-                          className="p-5"
-                        >
-                          <h2 className="text-lg font-black text-gray-800 line-clamp-2 mb-2 group-hover:text-green-600 transition-colors">
-                            {capitalizeFirst(item.title)}
-                          </h2>
-                          
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                            {capitalizeFirst(item.desc)}
-                          </p>
-
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="inline-block bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200">
-                              {capitalizeFirst(item.category)}
-                            </span>
-
-                            <div className="flex items-center text-xs text-gray-500 font-medium">
-                              <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                              {new Date(item.createdAt).toLocaleDateString(undefined, {
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Link
-                              to={`/update/${item.idNote}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              Edit
-                            </Link>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(item.idNote);
-                              }}
-                              className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                        note={item}
+                        onPin={handlePin}
+                        onDelete={handleDelete}
+                      />
                     ))}
                 </div>
 
