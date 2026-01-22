@@ -11,6 +11,9 @@ const Trash = () => {
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedNoteId, setSelectedNoteId] = useState(null);
+
   /* ---- FETCH TRASH NOTES ---- */
   useEffect(() => {
     const fetchTrashNotes = async () => {
@@ -35,13 +38,25 @@ const Trash = () => {
   };
 
   /* ---- PERMANENT DELETE ---- */
-  const handlePermanentDelete = async (id) => {
+  const handlePermanentDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8800/note/${id}/permanent`);
-      setNotes((prev) => prev.filter((n) => n.idNote !== id));
+      await axios.delete(`http://localhost:8800/note/${selectedNoteId}/permanent`);
+      setNotes((prev) => prev.filter((n) => n.idNote !== selectedNoteId));
+      setShowConfirm(false);
+      setSelectedNoteId(null);
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const openConfirmModal = (id) => {
+    setSelectedNoteId(id);
+    setShowConfirm(true);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setSelectedNoteId(null);
   };
 
   /* ---- FILTER NOTES ---- */
@@ -112,11 +127,49 @@ const Trash = () => {
               key={item.idNote}
               note={item}
               onRestore={handleRestore}
-              onPermanentDelete={handlePermanentDelete}
+              onPermanentDelete={() => openConfirmModal(item.idNote)}
             />
           ))}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 w-90 shadow-2xl transform transition-all">
+            {/* Icon */}
+            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            
+            {/* Content */}
+            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+              Delete Permanently?
+            </h3>
+            <p className="text-sm text-gray-600 mb-8 text-center leading-relaxed">
+              This note will be deleted forever. You won't be able to recover it.
+            </p>
+            
+            {/* Buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={handlePermanentDelete}
+                className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-sm"
+              >
+                Delete Forever
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
