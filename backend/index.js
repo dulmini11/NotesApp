@@ -133,3 +133,23 @@ app.get("/note/:id", (req, res) => {
         return res.json(data[0]);
     });
 });
+
+app.delete("/note/:id/permanent", (req, res) => {
+    const noteId = req.params.id;
+    const q = "DELETE FROM note WHERE idNote = ?";
+
+    db.query(q, [noteId], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json("Note permanently deleted.");
+    });
+});
+
+app.put("/note/:id/restore", (req, res) => {
+    const noteId = req.params.id;
+    const q = "UPDATE note SET isDeleted = 0 WHERE idNote = ?";
+
+    db.query(q, [noteId], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json("Note restored successfully.");
+    });
+});
