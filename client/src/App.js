@@ -9,6 +9,8 @@ import ViewNote from "./pages/ViewNote";
 import CalendarPage from "./pages/CalendarPage";
 import LoadingPage from "./pages/LoadingPage";
 import Checklists from "./pages/checklists";
+import Trash from "./pages/trash";
+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +40,7 @@ function App() {
           <Route path="/view/:id" element={<ViewNote />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/checklists" element={<Checklists />} />
+          <Route path="/trash" element={<Trash />} />
         </Routes>
       </BrowserRouter>
     </div>
