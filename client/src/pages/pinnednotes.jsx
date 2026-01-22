@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
 import pinnoteVideo from "../assets/pinnote.mp4";
+import { Sparkles } from "lucide-react";
 
 const PinnedNotes = () => {
-  /* ---- STATE ---- */
   const [notes, setNotes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
 
-  /* ---- FETCH PINNED NOTES ---- */
   useEffect(() => {
     const fetchPinnedNotes = async () => {
       try {
@@ -25,7 +25,6 @@ const PinnedNotes = () => {
     fetchPinnedNotes();
   }, []);
 
-  /* ---- DELETE NOTE ---- */
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:8800/note/${id}`);
@@ -35,21 +34,17 @@ const PinnedNotes = () => {
     }
   };
 
-  /* ---- PIN / UNPIN NOTE ---- */
   const handlePin = async (id, currentStatus) => {
     try {
       await axios.put(`http://localhost:8800/note/${id}/pin`, {
         isPinned: !currentStatus,
       });
 
-      // If unpinned → remove from pinned list
       if (currentStatus) {
         setNotes((prev) => prev.filter((n) => n.idNote !== id));
       } else {
         setNotes((prev) =>
-          prev.map((n) =>
-            n.idNote === id ? { ...n, isPinned: true } : n
-          )
+          prev.map((n) => (n.idNote === id ? { ...n, isPinned: true } : n))
         );
       }
     } catch (err) {
@@ -57,46 +52,31 @@ const PinnedNotes = () => {
     }
   };
 
-  /* ---- FILTER NOTES ---- */
   const filteredNotes = notes.filter((note) => {
     const query = searchQuery.toLowerCase();
     const title = (note.title || "").toLowerCase();
     const desc = (note.desc || "").toLowerCase();
     const category = (note.category || "").toLowerCase();
     const date = new Date(note.createdAt)
-      .toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+      .toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
       .toLowerCase();
 
-    return (
-      title.includes(query) ||
-      desc.includes(query) ||
-      category.includes(query) ||
-      date.includes(query)
-    );
+    return title.includes(query) || desc.includes(query) || category.includes(query) || date.includes(query);
   });
 
-  /* ---- SORT NOTES ---- */
   const sortedNotes = [...filteredNotes].sort((a, b) => {
     let comparison = 0;
-
     switch (sortBy) {
       case "name":
         comparison = (a.title || "").localeCompare(b.title || "");
         break;
-
       case "category":
         comparison = (a.category || "").localeCompare(b.category || "");
         break;
-
       case "date":
       default:
         comparison = new Date(a.createdAt) - new Date(b.createdAt);
     }
-
     return sortOrder === "asc" ? comparison : -comparison;
   });
 
@@ -119,11 +99,9 @@ const PinnedNotes = () => {
           />
         </div>
 
-        <h1 className="text-3xl font-bold mb-12 text-gray-800">
-          Pinned Notes
-        </h1>
+        <h1 className="text-3xl font-bold mb-12 text-gray-800">Pinned Notes</h1>
 
-        {/* SEARCH BAR (WITH CLEAR SUPPORT) */}
+        {/* SEARCH BAR */}
         <SearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -134,23 +112,32 @@ const PinnedNotes = () => {
           setSortOrder={setSortOrder}
         />
 
-        {/* NOTES GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {sortedNotes.length === 0 && (
-            <p className="text-gray-500 col-span-full text-center">
-              No pinned notes available.
-            </p>
-          )}
-
-          {sortedNotes.map((item) => (
-            <NoteCard
-              key={item.idNote}
-              note={item}
-              onPin={handlePin}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        {/* NOTES GRID / EMPTY STATE */}
+        {sortedNotes.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
+              <Sparkles className="w-12 h-12 text-gray-400" />
+            </div>
+            <p className="text-gray-500 font-medium">No notes yet. Create your first note!</p>
+            <div className="mt-6 flex justify-center">
+              <Link
+                to="/add"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                </svg>
+                Create New Note
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+            {sortedNotes.map((item) => (
+              <NoteCard key={item.idNote} note={item} onPin={handlePin} onDelete={handleDelete} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

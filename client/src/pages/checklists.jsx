@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { CheckSquare, Calendar, Pin } from "lucide-react";
+import { CheckSquare, Calendar, Pin, Sparkles } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 
 const Checklists = () => {
   const navigate = useNavigate();
   const [checklists, setChecklists] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-    
+
   // Filter checklists based on search query
   const filteredChecklists = checklists.filter(checklist => {
     const query = searchQuery.toLowerCase();
@@ -21,13 +21,8 @@ const Checklists = () => {
       month: "short",
       day: "numeric",
     }).toLowerCase();
- 
-    return (
-      title.includes(query) ||
-      desc.includes(query) ||
-      category.includes(query) ||
-      date.includes(query)
-    );  
+
+    return title.includes(query) || desc.includes(query) || category.includes(query) || date.includes(query);
   });
 
   // Fetch checklists
@@ -43,13 +38,11 @@ const Checklists = () => {
     fetchChecklists();
   }, []);
 
-  // Capitalize first letter
   const capitalizeFirst = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
 
-  // Delete checklist
   const handleDelete = async (id) => {
     try {
       await axios.delete("http://localhost:8800/checklist/" + id);
@@ -59,13 +52,12 @@ const Checklists = () => {
     }
   };
 
-  // Pin/Unpin checklist
   const handlePin = async (id, currentStatus) => {
     try {
       await axios.put(`http://localhost:8800/checklist/${id}/pin`, {
         isPinned: !currentStatus,
       });
-      
+
       setChecklists(prev =>
         prev.map(checklist =>
           checklist.idChecklist === id ? { ...checklist, isPinned: !currentStatus } : checklist
@@ -76,7 +68,6 @@ const Checklists = () => {
     }
   };
 
-  // Render individual checklist card
   const renderChecklistCard = (item) => (
     <div
       key={item.idChecklist}
@@ -88,8 +79,6 @@ const Checklists = () => {
           <h2 className="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-green-600 transition-colors">
             {capitalizeFirst(item.title)}
           </h2>
-
-          {/* Pin Button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -123,23 +112,23 @@ const Checklists = () => {
         </div>
 
         <div className="flex gap-2 mt-auto">
-                            <Link
-                              to={`/update/${item.idNote}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              Edit
-                            </Link>
+          <Link
+            to={`/update/${item.idNote}`}
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 bg-gradient-to-r from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c] text-white text-xs font-bold py-2.5 px-3 rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+          >
+            Edit
+          </Link>
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(item.idNote);
-                              }}
-                              className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              Delete
-                            </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(item.idNote);
+            }}
+            className="flex-1 bg-gradient-to-r from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
@@ -157,12 +146,27 @@ const Checklists = () => {
           resultsCount={filteredChecklists.length}
         />
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {checklists.length === 0 && (
-            <p className="text-gray-500 col-span-full text-center">No checklists available.</p>
-          )}
-          {filteredChecklists.map(item => renderChecklistCard(item))}
-        </div>
+        {filteredChecklists.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
+              <Sparkles className="w-12 h-12 text-gray-400" />
+            </div>
+            <p className="text-gray-500 font-medium">No checklists yet. Create your first checklist!</p>
+            <div className="mt-6 flex justify-center">
+              <Link
+                to="/add-checklist"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              >
+                <CheckSquare className="w-5 h-5" />
+                Create New Checklist
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+            {filteredChecklists.map(item => renderChecklistCard(item))}
+          </div>
+        )}
       </div>
     </div>
   );
