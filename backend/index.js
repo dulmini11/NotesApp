@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 
 // Get All Notes
 app.get("/note", (req, res) => {
-    const q = "SELECT * FROM note";
+    const q = "SELECT * FROM note WHERE isDeleted = 0";
 
     db.query(q, (err, data) => {
         if (err) return res.json(err);
@@ -63,11 +63,11 @@ app.post("/note", (req, res) => {
 
 app.delete("/note/:id", (req, res) => {
     const noteId = req.params.id;
-    const q = "DELETE FROM note WHERE idNote = ?";
+    const q = "UPDATE note SET isDeleted = 1 WHERE idNote = ?";
 
     db.query(q, [noteId], (err, data) => {
-        if (err) return res.json(err);
-        return res.json("Note has been deleted successfully.");
+        if (err) return res.status(500).json(err);
+        return res.json("Note moved to trash.");
     });
 });
 
@@ -121,5 +121,14 @@ app.get("/note/:id", (req, res) => {
         if (err) return res.json(err);
         if (data.length === 0) return res.status(404).json({ message: "Note not found" });
         return res.json(data[0]);
+    });
+});
+
+app.get("/note/trash", (req, res) => {
+    const q = "SELECT * FROM note WHERE isDeleted = 1";
+
+    db.query(q, (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json(data);
     });
 });
