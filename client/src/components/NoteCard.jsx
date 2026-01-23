@@ -1,13 +1,25 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Pin, Calendar } from "lucide-react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Pin, Calendar, MoreVertical } from "lucide-react";
 
-const NoteCard = ({ note, onPin, onDelete }) => {
+const NoteCard = ({ note, onPin, onDelete, onLock }) => {
   const navigate = useNavigate();
+  const [showMenu, setShowMenu] = useState(false);
 
   const capitalizeFirst = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
+  const toggleMenu = (e) => {
+    e.stopPropagation(); // prevent card click
+    setShowMenu((prev) => !prev);
+  };
+
+  const handleLockClick = (e) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    onLock(note.idNote);
   };
 
   return (
@@ -16,23 +28,53 @@ const NoteCard = ({ note, onPin, onDelete }) => {
       onClick={() => navigate(`/view/${note.idNote}`)}
     >
       <div className="p-4 flex flex-col flex-grow">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 relative">
           <h2 className="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-green-600 transition-colors">
             {capitalizeFirst(note.title)}
           </h2>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onPin(note.idNote, note.isPinned);
-            }}
-            className={`flex items-center justify-center p-2 rounded-3xl shadow-md transition-all duration-200 transform hover:scale-105 ${
-              note.isPinned
-                ? "bg-yellow-400 text-white hover:bg-yellow-500"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
-          >
-            <Pin className={`w-3 h-3 ${note.isPinned ? "text-white" : "text-gray-800"}`} />
-          </button>
+
+          <div className="flex items-center gap-2">
+            {/* Existing PIN button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPin(note.idNote, note.isPinned);
+              }}
+              className={`flex items-center justify-center p-2 rounded-3xl shadow-md transition-all duration-200 transform hover:scale-105 ${
+                note.isPinned
+                  ? "bg-yellow-400 text-white hover:bg-yellow-500"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+              }`}
+            >
+              <Pin
+                className={`w-3 h-3 ${
+                  note.isPinned ? "text-white" : "text-gray-800"
+                }`}
+              />
+            </button>
+
+            {/* Three-dot menu */}
+            <div className="relative">
+              <button
+                onClick={toggleMenu}
+                className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <MoreVertical className="w-4 h-4 text-gray-700" />
+              </button>
+
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                  <button
+                    onClick={handleLockClick}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    🔒 Lock
+                  </button>
+                  {/* Add more menu options here if needed */}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-grow">
           {capitalizeFirst(note.desc)}
