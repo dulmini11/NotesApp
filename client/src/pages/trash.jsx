@@ -3,6 +3,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import TrashNoteCard from "../components/TrashNoteCard";
+import { Trash2 } from "lucide-react";
 
 const Trash = () => {
   /* ---- STATE ---- */
@@ -99,9 +100,19 @@ const Trash = () => {
       <Sidebar />
 
       <div className="flex-1 mt-10 p-4">
-        <h1 className="text-3xl font-bold mb-12 text-red-600">
-          🗑 Trash
-        </h1>
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+            <Trash2 className="text-white" size={19} />
+          </div>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+            Trash
+          </h1>
+        </div>
+        <p className="text-sm text-gray-600 ml-16">
+          Recover or permanently delete notes
+        </p>
+      </div>
 
         {/* SEARCH BAR */}
         <SearchBar

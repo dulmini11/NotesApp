@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
 import pinnoteVideo from "../assets/pinnote.mp4";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Pin } from "lucide-react";
 
 const PinnedNotes = () => {
   const [notes, setNotes] = useState([]);
@@ -99,7 +99,19 @@ const PinnedNotes = () => {
           />
         </div>
 
-        <h1 className="text-3xl font-bold mb-12 text-gray-800">Pinned Notes</h1>
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+              <Pin className="text-white" size={19} />
+            </div>
+            <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+              Pinned Notes
+            </h1>
+          </div>
+          <p className="text-sm text-gray-600 ml-16">
+            Quickly access your pinned notes
+          </p>
+        </div>
 
         {/* SEARCH BAR */}
         <SearchBar

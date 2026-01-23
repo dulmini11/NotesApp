@@ -44,7 +44,7 @@ const Notes = () => {
   const getGreetingEmoji = (hour) => {
     if (hour >= 5 && hour < 12) return "☀️";
     if (hour >= 12 && hour < 17) return "🌤️";
-    if (hour >= 17 && hour < 21) return "🌆";
+    if (hour >= 17 && hour < 21) return "🌇";
     return "🌙";
   };
 
@@ -281,10 +281,10 @@ const Notes = () => {
               <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-green-100">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl shadow-lg">
+                    <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-2xl font-black text-gray-800">Your Notes</h3>
+                    <h3 className="text-2xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">Your Notes</h3>
                   </div>
                   <Link
                     to="/allnotes"

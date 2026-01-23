@@ -114,10 +114,10 @@ const CalendarPage = () => {
         {/* HEADER */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg">
-              <Calendar className="text-white" size={28} />
+            <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+              <Calendar className="text-white" size={19} />
             </div>
-            <h1 className="text-5xl font-black bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
               Calendar
             </h1>
           </div>

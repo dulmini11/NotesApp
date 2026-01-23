@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { Calendar, Sparkles } from "lucide-react";
+import { Calendar, Sparkles, CheckSquare } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 import NoteCard from "../components/NoteCard";
 import AllNote from "../assets/allnote.mp4";
@@ -228,7 +228,19 @@ const AllNotes = () => {
       <div className="flex-1 mt-10 p-4">
         <div className="flex items-center justify-between mb-8">
           
-          <h1 className="text-4xl font-bold text-gray-800">All Notes</h1>
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+                <CheckSquare className="text-white" size={19} />
+              </div>
+              <h1 className="text-4xl font-black bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                All Notes
+              </h1>
+            </div>
+            <p className="text-sm text-gray-600 ml-16">
+              View and manage all your notes
+            </p>
+          </div>
           
           {notes.length >= 1 && (
             <div className="text-center mb-5">
@@ -238,6 +250,7 @@ const AllNotes = () => {
                 loop
                 muted
                 playsInline
+                controls={false}
                 disablePictureInPicture
                 controlsList="nodownload nofullscreen noremoteplayback"
                 className="absolute top-0 right-0 w-[600px] h-[340px] pointer-events-none mix-blend-screen"

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
-import { CheckSquare, Calendar, Pin, Sparkles } from "lucide-react";
+import { CheckSquare, ListChecks, Calendar, Pin, Sparkles } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 
 const Checklists = () => {
@@ -138,7 +138,19 @@ const Checklists = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 mt-10 p-4">
-        <h1 className="text-3xl font-bold mb-12 text-gray-800">Checklists</h1>
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+              <ListChecks className="text-white" size={19} />
+            </div>
+            <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+              Checklists
+            </h1>
+          </div>
+          <p className="text-sm text-gray-600 ml-16">
+            Organize tasks with simple checklists
+          </p>
+        </div>
 
         <SearchBar 
           searchQuery={searchQuery}
