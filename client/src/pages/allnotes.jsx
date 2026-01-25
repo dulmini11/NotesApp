@@ -13,6 +13,9 @@ const AllNotes = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const [isSidebarMinimized] = useState(true);
+  const expanded = !isSidebarMinimized || isSidebarHovered;
 
   const capitalizeFirst = (text) => {
     if (!text) return "";
@@ -224,8 +227,15 @@ const AllNotes = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
-      <div className="flex-1 mt-10 p-4">
+      <Sidebar expanded={expanded} setIsHovered={setIsSidebarHovered} />
+
+      {/* MAIN CONTENT */}
+      <div
+        className={`flex-1 p-8 relative z-10 transition-all duration-300
+          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+          overflow-auto
+        `}
+      >
         <div className="flex items-center justify-between mb-8">
           
           <div className="mb-10">

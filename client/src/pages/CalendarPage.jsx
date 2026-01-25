@@ -12,6 +12,9 @@ const CalendarPage = () => {
   const [modalNotes, setModalNotes] = useState([]);
   const [modalDate, setModalDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const [isSidebarMinimized] = useState(true);
+  const expanded = !isSidebarMinimized || isSidebarHovered;
 
   /* FETCH NOTES */
   useEffect(() => {
@@ -108,7 +111,15 @@ const CalendarPage = () => {
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/20 to-emerald-300/20 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-200/20 to-cyan-300/20 rounded-full blur-3xl"></div>
       
-      <Sidebar />
+      <Sidebar expanded={expanded} setIsHovered={setIsSidebarHovered} />
+
+      {/* MAIN CONTENT */}
+      <div
+        className={`flex-1 p-8 relative z-10 transition-all duration-300
+          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+          overflow-auto
+        `}
+      >
 
       <div className="flex-1 p-8 relative z-10">
         {/* HEADER */}
@@ -353,6 +364,7 @@ const CalendarPage = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

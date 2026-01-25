@@ -17,6 +17,10 @@ const Notes = () => {
   const [time, setTime] = useState(new Date());
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const [isSidebarMinimized] = useState(true);
+  const expanded = !isSidebarMinimized || isSidebarHovered;
+
 
   /* --- DIGITAL CLOCK --- */
 
@@ -159,9 +163,15 @@ const Notes = () => {
 
   return (
     <div className="flex bg-gradient-to-br from-lime-50 to-teal-50 min-h-screen">
-      <Sidebar />
+      <Sidebar expanded={expanded} setIsHovered={setIsSidebarHovered} />
 
       {/* MAIN CONTENT */}
+      <div
+        className={`flex-1 p-8 relative z-10 transition-all duration-300
+          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+          overflow-auto
+        `}
+      >
       <div className="flex-1 p-8 relative z-10">
         
         {/* Hero Section with Clock */}
@@ -449,6 +459,7 @@ const Notes = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
