@@ -12,22 +12,17 @@ import {
 import { Link } from 'react-router-dom';
 import UserImage from "../assets/user.jpg";
 
-const Sidebar = () => {
-  const [isMinimized] = useState(true); // default minimized
-  const [isHovered, setIsHovered] = useState(false);
-
+const Sidebar = ({ expanded, setIsHovered }) => {
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
-
-  const expanded = !isMinimized || isHovered;
 
   return (
     <aside
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`h-screen bg-white rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300 ml-5 ${
-        expanded ? "w-50" : "w-20"
-      }`}
+      className={`fixed top-0 left-5 h-screen bg-white rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300
+        ${expanded ? "w-52" : "w-20"}  /* Updated widths */
+      `}
     >
       {/* TOP SECTION */}
       <div>
@@ -71,7 +66,6 @@ const Sidebar = () => {
           `}
         >
           <Plus className="w-6 h-6" />
-
           {expanded && (
             <span className="whitespace-nowrap">
               Add New Note
