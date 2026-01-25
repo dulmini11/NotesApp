@@ -173,7 +173,7 @@ const CalendarPage = () => {
                   {monthDays.map((d, i) => (
                     <div
                       key={i}
-                      className={`py-2 rounded-xl cursor-pointer text-center font-medium transition-all duration-200
+                      className={`py-2 rounded-full cursor-pointer text-center font-medium transition-all duration-200
                         ${
                           d.isCurrentMonth
                             ? isToday(d.date)

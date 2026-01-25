@@ -179,19 +179,19 @@ const Notes = () => {
               <div className="relative z-10 flex items-center justify-between gap-8">
                 <div className="flex-1">
                   {/* Greeting Section */}
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <div className="flex items-center gap-4">
                       <div className="text-5xl transform transition-transform duration-300 hover:scale-110">
                         {getGreetingEmoji(time.getHours())}
                       </div>
-                      <h2 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                      <h2 className="text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
                         {getGreeting(time.getHours())}
                       </h2>
                     </div>
-                    <p className="text-white/80 text-xl font-semibold ml-[5.5rem] tracking-wide">
+                    <p className="text-white/70 text-md font-semibold ml-[5.5rem] tracking-wide">
                       {time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
-                    <div className="text-2xl font-mono font-black tracking-wider ml-[5.5rem] tabular-nums">
+                    <div className="text-2xl font-sans font-bold tracking-wider ml-[5.5rem] tabular-nums">
                       <span className="inline-block hover:text-emerald-200 transition-colors">{format(time.getHours())}</span>
                       <span className="animate-pulse text-white/60 mx-0.5">:</span>
                       <span className="inline-block hover:text-emerald-200 transition-colors">{format(time.getMinutes())}</span>
@@ -207,7 +207,7 @@ const Notes = () => {
                   <div className="flex flex-col gap-4">
                     
                     {/* Notes */}
-                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-2 border border-gray-300/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
+                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-gray-300/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center">
                           <FileText className="w-4 h-4" />
@@ -224,7 +224,7 @@ const Notes = () => {
                     </div>
 
                     {/* Pinned */}
-                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-2 border border-gray-300/10 hover:bg-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
+                    <div className="group bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-gray-300/10 hover:bg-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center">
                           <Pin className="w-4 h-4" />
@@ -373,7 +373,7 @@ const Notes = () => {
                   {monthDays.map((dayObj, i) => (
                     <div
                       key={i}
-                      className={`text-sm py-2 rounded-lg font-semibold transition-all ${
+                      className={`py-2 rounded-full cursor-pointer text-center font-medium transition-all duration-200 ${
                         dayObj.isCurrentMonth
                           ? isToday(dayObj.date)
                             ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg scale-110'
@@ -401,7 +401,7 @@ const Notes = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-lime-50 to-green-300 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition"></div>
               <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-4 shadow-xl border border-green-100">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-2.5 rounded-xl shadow-lg">
+                  <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
                     <Clock className="w-5 h-5 text-white" />
                   </div>
                   <h3 className="text-lg font-black text-gray-800">Recent Notes</h3>
@@ -409,7 +409,7 @@ const Notes = () => {
 
                 <div className="space-y-2">
                   {recentNotes.length > 0 ? (
-                    recentNotes.slice(0, 4).map(note => (
+                    recentNotes.slice(0, 3).map(note => (
                       <div
                         key={note.idNote}
                         onClick={() => navigate(`/view/${note.idNote}`)}
