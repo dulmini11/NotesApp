@@ -9,6 +9,9 @@ const Checklists = () => {
   const navigate = useNavigate();
   const [checklists, setChecklists] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const [isSidebarMinimized] = useState(true);
+  const expanded = !isSidebarMinimized || isSidebarHovered;
 
   // Filter checklists based on search query
   const filteredChecklists = checklists.filter(checklist => {
@@ -136,49 +139,58 @@ const Checklists = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
-      <div className="flex-1 mt-10 p-4">
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
-              <ListChecks className="text-white" size={19} />
+      <Sidebar expanded={expanded} setIsHovered={setIsSidebarHovered} />
+
+      {/* MAIN CONTENT */}
+      <div
+        className={`flex-1 p-8 relative z-10 transition-all duration-300
+          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+          overflow-auto
+        `}
+      >
+        <div className="flex-1 mt-10 p-4">
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+                <ListChecks className="text-white" size={19} />
+              </div>
+              <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+                Checklists
+              </h1>
             </div>
-            <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
-              Checklists
-            </h1>
+            <p className="text-sm text-gray-600 ml-16">
+              Organize tasks with simple checklists
+            </p>
           </div>
-          <p className="text-sm text-gray-600 ml-16">
-            Organize tasks with simple checklists
-          </p>
+
+          <SearchBar 
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            resultsCount={filteredChecklists.length}
+          />
+
+          {filteredChecklists.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
+                <Sparkles className="w-12 h-12 text-gray-400" />
+              </div>
+              <p className="text-gray-500 font-medium">No checklists yet. Create your first checklist!</p>
+              <div className="mt-6 flex justify-center">
+                <Link
+                  to="/add-checklist"
+                  className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <CheckSquare className="w-5 h-5" />
+                  Create New Checklist
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+              {filteredChecklists.map(item => renderChecklistCard(item))}
+            </div>
+          )}
         </div>
-
-        <SearchBar 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          resultsCount={filteredChecklists.length}
-        />
-
-        {filteredChecklists.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
-              <Sparkles className="w-12 h-12 text-gray-400" />
-            </div>
-            <p className="text-gray-500 font-medium">No checklists yet. Create your first checklist!</p>
-            <div className="mt-6 flex justify-center">
-              <Link
-                to="/add-checklist"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              >
-                <CheckSquare className="w-5 h-5" />
-                Create New Checklist
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-            {filteredChecklists.map(item => renderChecklistCard(item))}
-          </div>
-        )}
       </div>
     </div>
   );

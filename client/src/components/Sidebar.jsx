@@ -36,7 +36,7 @@ const Sidebar = ({ expanded, setIsHovered }) => {
             }`}
           />
           {expanded && (
-            <div>
+            <div className="transition-all duration-1000">
               <p className="text-xs text-gray-400">Good Day 👋</p>
               <h2 className="font-semibold text-gray-800">Omi.y</h2>
             </div>
@@ -67,7 +67,7 @@ const Sidebar = ({ expanded, setIsHovered }) => {
         >
           <Plus className="w-6 h-6" />
           {expanded && (
-            <span className="whitespace-nowrap">
+            <span className="whitespace-nowrap transition-all duration-1000">
               Add New Note
             </span>
           )}
@@ -83,15 +83,19 @@ export default Sidebar;
 const MenuItem = ({ icon, label, expanded, to }) => {
   return (
     <Link to={to}>
-      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all">
+      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all duration-1000">
         <div
-          className={`transition-transform duration-300 ${
+          className={`transition-transform duration-1000 ${
             expanded ? "scale-50" : "scale-75"
           }`}
         >
           {icon}
         </div>
-        {expanded && <span className="text-sm">{label}</span>}
+        {expanded && (
+          <span className="text-sm transition-all duration-1000 opacity-100">
+            {label}
+          </span>
+        )}
       </div>
     </Link>
   );
