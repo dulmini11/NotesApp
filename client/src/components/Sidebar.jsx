@@ -20,8 +20,8 @@ const Sidebar = ({ expanded, setIsHovered }) => {
     <aside
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`fixed top-0 left-5 h-screen bg-white rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300
-        ${expanded ? "w-52" : "w-20"}  /* Updated widths */
+      className={`fixed top-0 left-3 h-screen bg-white rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300
+        ${expanded ? "w-52" : "w-20"}
       `}
     >
       {/* TOP SECTION */}
@@ -31,16 +31,19 @@ const Sidebar = ({ expanded, setIsHovered }) => {
           <img
             src={UserImage}
             alt="profile"
-            className={`rounded-full transition-all duration-300 mt-8 ${
+            className={`rounded-full transition-all duration-500 mt-8 ${
               expanded ? "w-12 h-12" : "w-10 h-10"
             }`}
           />
-          {expanded && (
-            <div className="transition-all duration-1000">
-              <p className="text-xs text-gray-400">Good Day 👋</p>
-              <h2 className="font-semibold text-gray-800">Omi.y</h2>
-            </div>
-          )}
+          {/* Profile Text */}
+          <div
+            className={`overflow-hidden transition-all duration-1000 ${
+              expanded ? "max-w-full opacity-100 ml-2" : "max-w-0 opacity-0 ml-0"
+            }`}
+          >
+            <p className="text-xs text-gray-400">Good Day 👋</p>
+            <h2 className="font-semibold text-gray-800">Omi.y</h2>
+          </div>
         </div>
 
         {/* MENU */}
@@ -66,11 +69,13 @@ const Sidebar = ({ expanded, setIsHovered }) => {
           `}
         >
           <Plus className="w-6 h-6" />
-          {expanded && (
-            <span className="whitespace-nowrap transition-all duration-1000">
-              Add New Note
-            </span>
-          )}
+          <span
+            className={`whitespace-nowrap overflow-hidden transition-all duration-1000 ${
+              expanded ? "max-w-full opacity-100 ml-2" : "max-w-0 opacity-0 ml-0"
+            }`}
+          >
+            Add New Note
+          </span>
         </Link>
       </div>
     </aside>
@@ -83,19 +88,21 @@ export default Sidebar;
 const MenuItem = ({ icon, label, expanded, to }) => {
   return (
     <Link to={to}>
-      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all duration-1000">
+      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-gray-100 transition-all duration-300">
         <div
-          className={`transition-transform duration-1000 ${
+          className={`transition-transform duration-500 ${
             expanded ? "scale-50" : "scale-75"
           }`}
         >
           {icon}
         </div>
-        {expanded && (
-          <span className="text-sm transition-all duration-1000 opacity-100">
-            {label}
-          </span>
-        )}
+        <span
+          className={`text-sm overflow-hidden transition-all duration-1000 ${
+            expanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
+          }`}
+        >
+          {label}
+        </span>
       </div>
     </Link>
   );

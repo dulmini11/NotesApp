@@ -89,13 +89,11 @@ const PinnedNotes = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-8 relative z-10 transition-all duration-300
+        className={`flex-1 p-4 relative z-10 transition-all duration-300
           ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
           overflow-auto
         `}
       >
-
-      <div className="flex-1 mt-10 p-4 relative">
         {/* VIDEO */}
         <div className="fixed top-0 right-4 z-50">
           <video
@@ -162,7 +160,6 @@ const PinnedNotes = () => {
           </div>
         )}
       </div>
-    </div>
     </div>
   );
 };

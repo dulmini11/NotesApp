@@ -104,7 +104,7 @@ const Trash = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-8 relative z-10 transition-all duration-300
+        className={`flex-1 p-4 relative z-10 transition-all duration-300
           ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
           overflow-auto
         `}

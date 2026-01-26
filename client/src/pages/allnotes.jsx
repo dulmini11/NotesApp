@@ -231,7 +231,7 @@ const AllNotes = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-8 relative z-10 transition-all duration-300
+        className={`flex-1 p-4 relative z-10 transition-all duration-300
           ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
           overflow-auto
         `}
@@ -267,7 +267,7 @@ const AllNotes = () => {
               />
               <Link
                 to="/add"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-500 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-400 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-3 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

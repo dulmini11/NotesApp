@@ -115,13 +115,11 @@ const CalendarPage = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-8 relative z-10 transition-all duration-300
+        className={`flex-1 p-4 relative z-10 transition-all duration-300
           ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
           overflow-auto
         `}
       >
-
-      <div className="flex-1 p-8 relative z-10">
         {/* HEADER */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-2">
@@ -364,7 +362,6 @@ const CalendarPage = () => {
           </div>
         </div>
       )}
-    </div>
     </div>
   );
 };
