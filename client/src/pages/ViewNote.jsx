@@ -24,6 +24,80 @@ const ViewNote = () => {
     fetchNote();
   }, [noteId]);
 
+  // Function to safely render HTML content
+  const renderHTMLContent = (html) => {
+    if (!html) return "No description provided.";
+    
+    // Create a temporary div to parse and style the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Apply styles to lists to ensure they display properly
+    const lists = tempDiv.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      if (list.tagName === 'UL') {
+        list.style.listStyleType = 'disc';
+      } else if (list.tagName === 'OL') {
+        list.style.listStyleType = 'decimal';
+      }
+      list.style.marginLeft = '24px';
+      list.style.paddingLeft = '8px';
+      list.style.marginTop = '8px';
+      list.style.marginBottom = '8px';
+    });
+    
+    // Apply styles to list items
+    const listItems = tempDiv.querySelectorAll('li');
+    listItems.forEach(li => {
+      li.style.marginBottom = '4px';
+      li.style.display = 'list-item';
+    });
+    
+    // Apply heading styles
+    const headings = tempDiv.querySelectorAll('h1, h2, h3, h4');
+    headings.forEach(heading => {
+      if (heading.tagName === 'H1') {
+        heading.style.fontSize = '1.875rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '1rem';
+        heading.style.marginTop = '1.5rem';
+      } else if (heading.tagName === 'H2') {
+        heading.style.fontSize = '1.5rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.75rem';
+        heading.style.marginTop = '1.25rem';
+      } else if (heading.tagName === 'H3') {
+        heading.style.fontSize = '1.25rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.5rem';
+        heading.style.marginTop = '1rem';
+      } else if (heading.tagName === 'H4') {
+        heading.style.fontSize = '1.125rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.5rem';
+        heading.style.marginTop = '0.75rem';
+      }
+    });
+    
+    // Apply styles to formatted text
+    const boldElements = tempDiv.querySelectorAll('b, strong');
+    boldElements.forEach(el => {
+      el.style.fontWeight = 'bold';
+    });
+    
+    const italicElements = tempDiv.querySelectorAll('i, em');
+    italicElements.forEach(el => {
+      el.style.fontStyle = 'italic';
+    });
+    
+    const underlineElements = tempDiv.querySelectorAll('u');
+    underlineElements.forEach(el => {
+      el.style.textDecoration = 'underline';
+    });
+    
+    return { __html: tempDiv.innerHTML };
+  };
+
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
     try {
@@ -104,10 +178,16 @@ const ViewNote = () => {
               {note.title || "Untitled"}
             </h1>
 
-            {/* Description */}
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line mb-10">
-              {note.desc || "No description provided."}
-            </p>
+            {/* Description - Render HTML content */}
+            <div 
+              className="text-gray-700 leading-relaxed mb-10 prose max-w-none"
+              style={{
+                lineHeight: '1.6',
+                fontSize: '16px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+              dangerouslySetInnerHTML={renderHTMLContent(note.desc)}
+            />
 
             {/* Footer */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-green-100">

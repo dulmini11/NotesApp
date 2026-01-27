@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Update = () => {
@@ -13,6 +13,11 @@ const Update = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const idNote = location.pathname.split("/")[2];
+  
+  // Rich text editor references
+  const editorRef = useRef(null);
+  const [isEditorReady, setIsEditorReady] = useState(false);
+  const [selectedStyle, setSelectedStyle] = useState("p");
 
   // Fetch existing note data
   useEffect(() => {
@@ -35,17 +40,219 @@ const Update = () => {
     fetchNote();
   }, [idNote]);
 
+  // Initialize editor when data is loaded
+  useEffect(() => {
+    if (editorRef.current && !isEditorReady && !loading) {
+      if (book.desc) {
+        editorRef.current.innerHTML = book.desc;
+        applyListStyles();
+      } else {
+        editorRef.current.innerHTML = '<p style="color: #9ca3af;">Start typing here...</p>';
+      }
+      setIsEditorReady(true);
+    }
+  }, [isEditorReady, book.desc, loading]);
+
+  // Apply styles to lists and headings
+  const applyListStyles = () => {
+    if (!editorRef.current) return;
+    
+    const lists = editorRef.current.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      if (list.tagName === 'UL') {
+        list.style.listStyleType = 'disc';
+      } else if (list.tagName === 'OL') {
+        list.style.listStyleType = 'decimal';
+      }
+      list.style.marginLeft = '24px';
+      list.style.paddingLeft = '8px';
+      list.style.marginTop = '8px';
+      list.style.marginBottom = '8px';
+    });
+    
+    const listItems = editorRef.current.querySelectorAll('li');
+    listItems.forEach(li => {
+      li.style.marginBottom = '4px';
+      li.style.display = 'list-item';
+    });
+    
+    const headings = editorRef.current.querySelectorAll('h1, h2, h3, h4');
+    headings.forEach(heading => {
+      if (heading.tagName === 'H1') {
+        heading.style.fontSize = '1.875rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '1rem';
+      } else if (heading.tagName === 'H2') {
+        heading.style.fontSize = '1.5rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.75rem';
+      } else if (heading.tagName === 'H3') {
+        heading.style.fontSize = '1.25rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.5rem';
+      } else if (heading.tagName === 'H4') {
+        heading.style.fontSize = '1.125rem';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '0.5rem';
+      }
+    });
+  };
+
+  // Track current text style based on cursor position
+  useEffect(() => {
+    const updateSelectedStyle = () => {
+      if (!editorRef.current) return;
+      
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) return;
+      
+      const node = selection.anchorNode;
+      if (!node) return;
+      
+      let element = node.nodeType === 3 ? node.parentElement : node;
+      
+      while (element && element !== editorRef.current) {
+        const tag = element.tagName.toLowerCase();
+        if (['h1', 'h2', 'h3', 'h4', 'p', 'div', 'ul', 'ol', 'li'].includes(tag)) {
+          if (['ul', 'ol', 'li'].includes(tag)) {
+            setSelectedStyle("p");
+          } else {
+            setSelectedStyle(tag);
+          }
+          return;
+        }
+        element = element.parentElement;
+      }
+      
+      setSelectedStyle("p");
+    };
+
+    const editor = editorRef.current;
+    if (editor) {
+      editor.addEventListener('click', updateSelectedStyle);
+      editor.addEventListener('keyup', updateSelectedStyle);
+      
+      return () => {
+        editor.removeEventListener('click', updateSelectedStyle);
+        editor.removeEventListener('keyup', updateSelectedStyle);
+      };
+    }
+  }, []);
+
   const handleChange = (e) => {
     setBook(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleEditorChange = () => {
+    if (editorRef.current) {
+      applyListStyles();
+      const content = editorRef.current.innerHTML;
+      setBook(prev => ({ ...prev, desc: content }));
+    }
+  };
+
+  // Basic text formatting (bold, italic, underline)
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value);
+    handleEditorChange();
+    editorRef.current.focus();
+  };
+
+  // Block-level formatting (Headings)
+  const formatBlock = (tagName) => {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+    
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+    
+    if (selectedText) {
+      const wrapper = document.createElement(tagName);
+      
+      if (tagName === 'h1') {
+        wrapper.style.fontSize = '1.875rem';
+        wrapper.style.fontWeight = 'bold';
+        wrapper.style.marginBottom = '1rem';
+      } else if (tagName === 'h2') {
+        wrapper.style.fontSize = '1.5rem';
+        wrapper.style.fontWeight = 'bold';
+        wrapper.style.marginBottom = '0.75rem';
+      } else if (tagName === 'h3') {
+        wrapper.style.fontSize = '1.25rem';
+        wrapper.style.fontWeight = 'bold';
+        wrapper.style.marginBottom = '0.5rem';
+      } else if (tagName === 'h4') {
+        wrapper.style.fontSize = '1.125rem';
+        wrapper.style.fontWeight = 'bold';
+        wrapper.style.marginBottom = '0.5rem';
+      }
+      
+      wrapper.textContent = selectedText;
+      range.deleteContents();
+      range.insertNode(wrapper);
+    } else {
+      document.execCommand('formatBlock', false, `<${tagName}>`);
+    }
+    
+    handleEditorChange();
+    editorRef.current.focus();
+    setSelectedStyle(tagName);
+  };
+
+  // Create bullet or numbered lists
+  const insertList = (type) => {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+    
+    const range = selection.getRangeAt(0);
+    const parentElement = range.commonAncestorContainer.parentElement;
+    
+    const isInList = parentElement.closest('ul, ol, li');
+    
+    if (isInList) {
+      document.execCommand('outdent');
+    } else {
+      if (type === 'insertUnorderedList') {
+        document.execCommand('insertUnorderedList');
+      } else if (type === 'insertOrderedList') {
+        document.execCommand('insertOrderedList');
+      }
+      
+      setTimeout(() => {
+        applyListStyles();
+      }, 10);
+    }
+    
+    handleEditorChange();
+    editorRef.current.focus();
+  };
+
+  const clearFormatting = () => {
+    document.execCommand("removeFormat");
+    handleEditorChange();
+    editorRef.current.focus();
+    setSelectedStyle("p");
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
     try {
+      // Clean up empty paragraphs before saving
+      if (editorRef.current) {
+        const emptyPs = editorRef.current.querySelectorAll('p:empty, p:has(br:only-child)');
+        emptyPs.forEach(p => p.remove());
+      }
+      
+      const htmlContent = editorRef.current?.innerHTML || "";
+      const noteData = {
+        ...book,
+        desc: htmlContent,
+      };
+      
       await fetch("http://localhost:8800/note/" + idNote, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(book)
+        body: JSON.stringify(noteData)
       });
       navigate("/allnotes");
     } catch (err) {
@@ -135,7 +342,7 @@ const Update = () => {
               />
             </div>
 
-            {/* Title Input - Large with gradient effect on focus */}
+            {/* Title Input */}
             <div className="mb-6 group">
               <input
                 type="text"
@@ -148,7 +355,7 @@ const Update = () => {
               />
             </div>
 
-            {/* Category Input with enhanced icon */}
+            {/* Category Input */}
             <div className="mb-8 flex items-center gap-3 group p-3 rounded-xl hover:bg-gradient-to-r hover:from-[#22cb0b]/5 hover:to-transparent transition-all">
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-[#22cb0b] to-[#0a7e04] shadow-lg shadow-green-200">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,17 +373,131 @@ const Update = () => {
               />
             </div>
 
-            {/* Description - Enhanced textarea */}
-            <div className="mb-8 p-4 rounded-xl hover:bg-gradient-to-br hover:from-green-50/50 hover:to-transparent transition-all">
-              <textarea
-                rows="10"
-                name="desc"
-                value={book.desc}
-                onChange={handleChange}
-                placeholder="Start writing your note... ✨"
-                className="w-full px-0 py-2 text-base text-gray-700 leading-relaxed border-0 outline-none resize-none bg-transparent placeholder-gray-400"
-                style={{ caretColor: '#22cb0b' }}
+            {/* Rich Text Editor Toolbar */}
+            <div className="mb-4 flex flex-wrap gap-2 p-3 bg-green-50/50 rounded-xl border border-green-100">
+              {/* Text styles dropdown */}
+              <div className="flex items-center gap-1">
+                <select
+                  className="px-2 py-1.5 text-xs bg-white border border-green-200 rounded-lg hover:bg-green-100 transition cursor-pointer outline-none"
+                  onChange={(e) => formatBlock(e.target.value)}
+                  value={selectedStyle}
+                >
+                  <option value="p">Normal Text</option>
+                  <option value="h1">Heading 1</option>
+                  <option value="h2">Heading 2</option>
+                  <option value="h3">Heading 3</option>
+                  <option value="h4">Heading 4</option>
+                </select>
+              </div>
+
+              {/* Text formatting buttons */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => formatText('bold')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Bold (Ctrl+B)"
+                >
+                  <span className="font-bold text-sm text-black">B</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => formatText('italic')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Italic (Ctrl+I)"
+                >
+                  <span className="italic text-sm text-black">I</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => formatText('underline')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Underline (Ctrl+U)"
+                >
+                  <span className="underline text-sm text-black">U</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={clearFormatting}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Clear Formatting"
+                >
+                  <span className="text-sm text-black">⎌</span>
+                </button>
+              </div>
+
+              {/* List buttons */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => insertList('insertUnorderedList')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Bullet List (Toggle)"
+                >
+                  <span className="text-lg text-black">•</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => insertList('insertOrderedList')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Numbered List (Toggle)"
+                >
+                  <span className="text-sm text-black">1.</span>
+                </button>
+              </div>
+
+              {/* Text alignment */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => formatText('justifyLeft')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Align Left"
+                >
+                  <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => formatText('justifyCenter')}
+                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  title="Align Center"
+                >
+                  <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 5a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Rich Text Editor Area */}
+            <div className="mb-8 p-4 rounded-xl hover:bg-gradient-to-br hover:from-green-50/50 hover:to-transparent transition-all min-h-[300px]">
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={handleEditorChange}
+                onBlur={handleEditorChange}
+                className="w-full min-h-[300px] px-0 py-2 text-base text-gray-700 leading-relaxed border-0 outline-none resize-none bg-transparent focus:outline-none focus:ring-0 cursor-text"
+                style={{
+                  lineHeight: '1.6',
+                  fontSize: '16px',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  caretColor: '#22cb0b'
+                }}
               />
+            </div>
+
+            {/* User tip */}
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+              <p className="text-xs text-blue-700">
+                <strong>Tip:</strong> Select text and use the toolbar above to format. Your formatting will be saved as HTML and displayed properly when viewing notes.
+              </p>
             </div>
 
             {/* Action Buttons */}
