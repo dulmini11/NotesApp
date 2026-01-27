@@ -26,6 +26,80 @@ const Add = () => {
     }
   };
 
+  // Formatting handlers
+  const applyFormatting = (format) => {
+    const textarea = document.querySelector('textarea[name="desc"]');
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = book.desc;
+    
+    let formattedText = "";
+    let newCursorPos = 0;
+
+    switch(format) {
+      case 'bold':
+        formattedText = text.substring(0, start) + "**" + 
+                        text.substring(start, end) + "**" + 
+                        text.substring(end);
+        newCursorPos = end + 4;
+        break;
+      case 'header1':
+        formattedText = text.substring(0, start) + "# " + 
+                        text.substring(start, end) + 
+                        text.substring(end);
+        newCursorPos = end + 2;
+        break;
+      case 'header2':
+        formattedText = text.substring(0, start) + "## " + 
+                        text.substring(start, end) + 
+                        text.substring(end);
+        newCursorPos = end + 3;
+        break;
+      case 'header3':
+        formattedText = text.substring(0, start) + "### " + 
+                        text.substring(start, end) + 
+                        text.substring(end);
+        newCursorPos = end + 4;
+        break;
+      case 'italic':
+        formattedText = text.substring(0, start) + "*" + 
+                        text.substring(start, end) + "*" + 
+                        text.substring(end);
+        newCursorPos = end + 2;
+        break;
+      case 'list':
+        formattedText = text.substring(0, start) + "- " + 
+                        text.substring(start, end) + 
+                        text.substring(end);
+        newCursorPos = end + 2;
+        break;
+      case 'code':
+        formattedText = text.substring(0, start) + "`" + 
+                        text.substring(start, end) + "`" + 
+                        text.substring(end);
+        newCursorPos = end + 2;
+        break;
+      case 'quote':
+        formattedText = text.substring(0, start) + "> " + 
+                        text.substring(start, end) + 
+                        text.substring(end);
+        newCursorPos = end + 2;
+        break;
+      default:
+        return;
+    }
+
+    setBook(prev => ({ ...prev, desc: formattedText }));
+    
+    // Focus back on textarea and set cursor position
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   return (
     <div className="min-h-screen bg-white p-4 md:p-8">
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -121,6 +195,83 @@ const Add = () => {
               />
             </div>
 
+            {/* Formatting Toolbar */}
+            <div className="mb-4 flex flex-wrap gap-2 p-3 bg-green-50/50 rounded-xl">
+              <div className="text-xs font-semibold text-[#0a7e04] mr-3 self-center">Formatting:</div>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('bold')}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Bold (Ctrl+B)"
+              >
+                <strong>B</strong>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('italic')}
+                className="px-3 py-1.5 text-xs italic bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Italic (Ctrl+I)"
+              >
+                I
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('header1')}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Heading 1"
+              >
+                H1
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('header2')}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Heading 2"
+              >
+                H2
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('header3')}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Heading 3"
+              >
+                H3
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('list')}
+                className="px-3 py-1.5 text-xs bg-white border border-green-200 rounded-lg hover:bg-green-100 transition flex items-center gap-1"
+                title="Bullet List"
+              >
+                <span>•</span> List
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('code')}
+                className="px-3 py-1.5 text-xs bg-white border border-green-200 rounded-lg hover:bg-green-100 transition font-mono"
+                title="Inline Code"
+              >
+                {`</>`}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => applyFormatting('quote')}
+                className="px-3 py-1.5 text-xs bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                title="Blockquote"
+              >
+                ❝ Quote
+              </button>
+            </div>
+
             {/* Description */}
             <div className="mb-8 p-4 rounded-xl hover:bg-green-50 transition-all">
               <textarea
@@ -128,8 +279,18 @@ const Add = () => {
                 name="desc"
                 value={book.desc}
                 onChange={handleChange}
-                placeholder="Start writing your note... ✨"
-                className="w-full px-0 py-2 border-0 outline-none resize-none bg-transparent"
+                placeholder="Start writing your note... ✨
+                
+Formatting examples (click buttons above or type manually):
+# Header 1
+## Header 2
+### Header 3
+**Bold text**
+*Italic text*
+- Bullet list item
+> Blockquote text
+`Inline code snippet`"
+                className="w-full px-0 py-2 border-0 outline-none resize-none bg-transparent text-sm"
               />
             </div>
 
