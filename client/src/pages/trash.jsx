@@ -104,87 +104,92 @@ const Trash = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-4 relative z-10 transition-all duration-300
-          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+        className={`flex-1 p-4 md:p-6 relative z-10 transition-all duration-300
+          ${expanded ? "lg:ml-60 ml-0" : "lg:ml-28 ml-0"}
           overflow-auto
         `}
       >
-
-      <div className="flex-1 mt-10 p-4">
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
-            <Trash2 className="text-white" size={19} />
+        <div className="mb-6 md:mb-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 md:p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+              <Trash2 className="text-white w-4 h-4 md:w-5 md:h-5" />
+            </div>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+              Trash
+            </h1>
           </div>
-          <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
-            Trash
-          </h1>
+          <p className="text-sm text-gray-600 ml-10 md:ml-16">
+            Recover or permanently delete notes
+          </p>
         </div>
-        <p className="text-sm text-gray-600 ml-16">
-          Recover or permanently delete notes
-        </p>
-      </div>
 
         {/* SEARCH BAR */}
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          resultsCount={sortedNotes.length}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-        />
+        <div className="mb-6">
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            resultsCount={sortedNotes.length}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+        </div>
 
         {/* NOTES GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {sortedNotes.length === 0 && (
-            <p className="text-gray-500 col-span-full text-center">
-              Trash is empty.
-            </p>
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 mb-8">
+          {sortedNotes.length === 0 ? (
+            <div className="col-span-full text-center py-10 md:py-20">
+              <div className="inline-block bg-gray-100 rounded-full p-4 md:p-6 mb-4">
+                <Trash2 className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
+              </div>
+              <p className="text-gray-500 font-medium text-sm md:text-base">
+                Trash is empty.
+              </p>
+            </div>
+          ) : (
+            sortedNotes.map((item) => (
+              <TrashNoteCard
+                key={item.idNote}
+                note={item}
+                onRestore={handleRestore}
+                onPermanentDelete={() => openConfirmModal(item.idNote)}
+              />
+            ))
           )}
-
-          {sortedNotes.map((item) => (
-            <TrashNoteCard
-              key={item.idNote}
-              note={item}
-              onRestore={handleRestore}
-              onPermanentDelete={() => openConfirmModal(item.idNote)}
-            />
-          ))}
         </div>
       </div>
 
       {/* Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 w-90 shadow-2xl transform transition-all">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl transform transition-all">
             {/* Icon */}
-            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 md:w-7 md:h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
             
             {/* Content */}
-            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 text-center">
               Delete Permanently?
             </h3>
-            <p className="text-sm text-gray-600 mb-8 text-center leading-relaxed">
+            <p className="text-sm text-gray-600 mb-6 md:mb-8 text-center leading-relaxed">
               This note will be deleted forever. You won't be able to recover it.
             </p>
             
             {/* Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={handlePermanentDelete}
-                className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-sm"
+                className="py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-sm text-sm md:text-base"
               >
                 Delete Forever
               </button>
               <button
                 onClick={cancelDelete}
-                className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-colors"
+                className="py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-colors text-sm md:text-base"
               >
                 Cancel
               </button>
@@ -192,7 +197,6 @@ const Trash = () => {
           </div>
         </div>
       )}
-    </div>
     </div>
   );
 };

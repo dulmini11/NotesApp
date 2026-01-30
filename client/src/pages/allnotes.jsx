@@ -151,7 +151,7 @@ const AllNotes = () => {
               <div className="flex-1 h-0.5 bg-gradient-to-r from-green-500 to-transparent"></div>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {grouped[letter].map(item => (
               <NoteCard 
                 key={item.idNote}
@@ -167,14 +167,14 @@ const AllNotes = () => {
       const grouped = groupByDate();
       return Object.keys(grouped).sort((a, b) => sortOrder === 'desc' ? new Date(b) - new Date(a) : new Date(a) - new Date(b)).map(date => (
         <div key={date} className="mb-8">
-          <div className="bg-white p-6 mt-16 rounded-xl shadow-lg">
+          <div className="bg-white p-4 md:p-6 mt-8 md:mt-16 rounded-xl shadow-lg">
             <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 px-5 py-3 rounded-r-xl">
-                <Calendar className="w-5 h-5 text-green-600" />
-                <span className="font-bold text-md text-gray-800">{date}</span>
+              <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 px-4 md:px-5 py-3 rounded-r-xl">
+                <Calendar className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+                <span className="font-bold text-sm md:text-md text-gray-800">{date}</span>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {grouped[date].map(item => (
                 <NoteCard 
                   key={item.idNote}
@@ -192,11 +192,11 @@ const AllNotes = () => {
       return Object.keys(grouped).sort().map(cat => (
         <div key={cat} className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2 border-3 border-green-500 text-green-700 bg-green-50 px-6 py-3 rounded-2xl shadow-lg font-bold text-md">
+            <div className="flex items-center gap-2 border-3 border-green-500 text-green-700 bg-green-50 px-4 md:px-6 py-3 rounded-2xl shadow-lg font-bold text-sm md:text-md">
               {cat}
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {grouped[cat].map(item => (
               <NoteCard 
                 key={item.idNote}
@@ -211,7 +211,7 @@ const AllNotes = () => {
     } else {
       // For 'pinned' or default
       return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           {displayNotes.map(item => (
             <NoteCard 
               key={item.idNote}
@@ -231,13 +231,13 @@ const AllNotes = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-4 relative z-10 transition-all duration-300
-          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+        className={`flex-1 p-3 md:p-4 relative z-10 transition-all duration-300
+          ${expanded ? "lg:ml-60 ml-0" : "lg:ml-28 ml-0"}  /* Responsive margins */
           overflow-auto
         `}
       >
-        <div className="flex items-center justify-between mb-8">
-          
+        {/* HEADER SECTION */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
@@ -263,44 +263,50 @@ const AllNotes = () => {
                 controls={false}
                 disablePictureInPicture
                 controlsList="nodownload nofullscreen noremoteplayback"
-                className="absolute top-0 right-0 w-[600px] h-[340px] pointer-events-none mix-blend-screen"
+                className="absolute top-0 right-0 w-[200px] h-[120px] md:w-[300px] md:h-[170px] lg:w-[400px] lg:h-[220px] xl:w-[600px] xl:h-[340px] pointer-events-none mix-blend-screen opacity-70 md:opacity-100"
               />
               <Link
                 to="/add"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-400 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-3 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-400 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base relative z-10"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                New Note
+                <span className="hidden xs:inline">New Note</span>
+                <span className="xs:hidden">Add</span>
               </Link>
             </div>
           )}
         </div>
-        <SearchBar 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          resultsCount={filteredNotes.length}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-        />
 
+        {/* SEARCH BAR */}
+        <div className="mb-6">
+          <SearchBar 
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            resultsCount={filteredNotes.length}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+        </div>
+
+        {/* CONTENT */}
         {displayNotes.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
-              <Sparkles className="w-12 h-12 text-gray-400" />
+          <div className="text-center py-10 md:py-20">
+            <div className="inline-block bg-gray-100 rounded-full p-4 md:p-6 mb-4">
+              <Sparkles className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
             </div>
-            <p className="text-gray-500 font-medium">
-              No notes yet. Create your first note!
+            <p className="text-gray-500 font-medium text-sm md:text-base">
+              No notes found. Create your first note!
             </p>
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4 md:mt-6 flex justify-center">
               <Link
                 to="/add"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-4 md:py-2 md:px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                 </svg>
                 Create New Note

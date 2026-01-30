@@ -89,13 +89,13 @@ const PinnedNotes = () => {
 
       {/* MAIN CONTENT */}
       <div
-        className={`flex-1 p-4 relative z-10 transition-all duration-300
-          ${expanded ? "ml-60" : "ml-28"}  /* Adjusted to sidebar width + spacing */
+        className={`flex-1 p-4 md:p-6 relative z-10 transition-all duration-300
+          ${expanded ? "lg:ml-60 ml-0" : "lg:ml-28 ml-0"}
           overflow-auto
         `}
       >
         {/* VIDEO */}
-        <div className="fixed top-0 right-4 z-50">
+        <div className="fixed top-0 right-2 md:right-4 z-50">
           <video
             src={pinnoteVideo}
             autoPlay
@@ -104,56 +104,60 @@ const PinnedNotes = () => {
             playsInline
             disablePictureInPicture
             controlsList="nodownload nofullscreen noremoteplayback"
-            className="w-60 h-60 object-cover pointer-events-none"
+            className="w-40 h-40 md:w-60 md:h-60 object-cover pointer-events-none opacity-80 md:opacity-100"
           />
         </div>
 
-        <div className="mb-10">
+        <div className="mb-6 md:mb-10">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
-              <Pin className="text-white" size={19} />
+            <div className="p-2 md:p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+              <Pin className="text-white w-4 h-4 md:w-5 md:h-5" />
             </div>
-            <h1 className="text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
               Pinned Notes
             </h1>
           </div>
-          <p className="text-sm text-gray-600 ml-16">
+          <p className="text-sm text-gray-600 ml-10 md:ml-16">
             Quickly access your pinned notes
           </p>
         </div>
 
         {/* SEARCH BAR */}
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          resultsCount={sortedNotes.length}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-        />
+        <div className="mb-6 mt-16">
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            resultsCount={sortedNotes.length}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+        </div>
 
         {/* NOTES GRID / EMPTY STATE */}
         {sortedNotes.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="inline-block bg-gray-100 rounded-full p-6 mb-4">
-              <Sparkles className="w-12 h-12 text-gray-400" />
+          <div className="text-center py-10 md:py-20">
+            <div className="inline-block bg-gray-100 rounded-full p-4 md:p-6 mb-4">
+              <Sparkles className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
             </div>
-            <p className="text-gray-500 font-medium">No notes yet. Create your first note!</p>
-            <div className="mt-6 flex justify-center">
+            <p className="text-gray-500 font-medium text-sm md:text-base">
+              No pinned notes yet. Pin some notes to see them here!
+            </p>
+            <div className="mt-4 md:mt-6 flex justify-center">
               <Link
-                to="/add"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                to="/allnotes"
+                className="inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-[#22cb0b] to-emerald-600 hover:from-[#1ab80a] hover:to-emerald-700 text-white font-semibold py-2 px-4 md:py-2 md:px-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                 </svg>
-                Create New Note
+                Browse All Notes
               </Link>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 mb-8">
             {sortedNotes.map((item) => (
               <NoteCard key={item.idNote} note={item} onPin={handlePin} onDelete={handleDelete} />
             ))}
