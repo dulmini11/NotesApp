@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pin, Calendar, MoreVertical, Lock, Archive } from "lucide-react"; // Added Archive import
-import axios from "axios";
 
 const NoteCard = ({ note, onPin, onDelete, onLock, onArchive }) => { // Added onArchive prop
   const navigate = useNavigate();
@@ -15,19 +14,6 @@ const NoteCard = ({ note, onPin, onDelete, onLock, onArchive }) => { // Added on
   const toggleMenu = (e) => {
     e.stopPropagation(); // prevent card click
     setShowMenu((prev) => !prev);
-  };
-
-  // Handle Archive function
-  const handleArchive = async (e) => {
-    e.stopPropagation();
-    try {
-      await axios.put(`http://localhost:8800/note/${note.idNote}/archive`, {
-        isArchived: !note.isArchived,
-      });
-      if (onArchive) onArchive(note.idNote, !note.isArchived);
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   // Function to safely render HTML content
@@ -149,11 +135,11 @@ const NoteCard = ({ note, onPin, onDelete, onLock, onArchive }) => { // Added on
                     </button>
                   )}
                   
-                  {/* Archive button in menu */}
+                  {/* Archive button - ADDED BEFORE LOCK BUTTON */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleArchive(e);
+                      if (onArchive) onArchive(note.idNote, note.isArchived);
                       setShowMenu(false);
                     }}
                     className="group w-full text-left px-3 md:px-5 py-2 md:py-3 text-xs md:text-sm hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 transition-all duration-200 flex items-center gap-2.5 md:gap-3.5 relative overflow-hidden"
@@ -214,17 +200,6 @@ const NoteCard = ({ note, onPin, onDelete, onLock, onArchive }) => { // Added on
           >
             Edit
           </Link>
-
-          {/* Archive Button - ADDED BEFORE DELETE */}
-          <button
-            onClick={handleArchive}
-            className={`flex-1 text-xs font-bold py-2 px-2 md:py-2.5 md:px-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105
-              ${note.isArchived 
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white' 
-                : 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 hover:from-gray-300 hover:to-gray-400'}`}
-          >
-            {note.isArchived ? 'Unarchive' : 'Archive'}
-          </button>
 
           <button
             onClick={(e) => {
