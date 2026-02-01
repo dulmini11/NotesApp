@@ -153,3 +153,29 @@ app.put("/note/:id/restore", (req, res) => {
         return res.json("Note restored successfully.");
     });
 });
+
+// GET Archived Notes
+app.get("/note/archived", (req, res) => {
+    const q = "SELECT * FROM note WHERE isArchived = 1 AND isDeleted = 0";
+    
+    db.query(q, (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json(data);
+    });
+});
+
+// Archive a Note
+app.put("/note/:id/archive", (req, res) => {
+    const noteId = req.params.id;
+    const { isArchived } = req.body;
+    
+    const q = "UPDATE note SET isArchived = ? WHERE idNote = ?";
+    
+    db.query(q, [isArchived, noteId], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json({ 
+            message: isArchived ? "Note archived" : "Note unarchived",
+            isArchived: isArchived 
+        });
+    });
+});
