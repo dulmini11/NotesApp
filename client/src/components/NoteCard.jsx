@@ -16,10 +16,70 @@ const NoteCard = ({ note, onPin, onDelete, onLock }) => {
     setShowMenu((prev) => !prev);
   };
 
-  const handleLockClick = (e) => {
-    e.stopPropagation();
-    setShowMenu(false);
-    onLock(note.idNote);
+  // Function to safely render HTML content
+  const renderHTMLContent = (html) => {
+    if (!html) return { __html: "No description provided." };
+    
+    // Create a temporary div to parse and style the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Apply styles to lists to ensure they display properly
+    const lists = tempDiv.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      if (list.tagName === 'UL') {
+        list.style.listStyleType = 'disc';
+      } else if (list.tagName === 'OL') {
+        list.style.listStyleType = 'decimal';
+      }
+      list.style.marginLeft = '24px';
+      list.style.paddingLeft = '8px';
+      list.style.marginTop = '8px';
+      list.style.marginBottom = '8px';
+    });
+    
+    // Apply styles to list items
+    const listItems = tempDiv.querySelectorAll('li');
+    listItems.forEach(li => {
+      li.style.marginBottom = '4px';
+      li.style.display = 'list-item';
+    });
+    
+    // Apply heading styles
+    const headings = tempDiv.querySelectorAll('h1, h2, h3, h4');
+    headings.forEach(heading => {
+      if (heading.tagName === 'H1') {
+        heading.style.fontSize = '1rem';
+        heading.style.fontWeight = 'bold';
+      } else if (heading.tagName === 'H2') {
+        heading.style.fontSize = '1rem';
+        heading.style.fontWeight = 'bold';
+      } else if (heading.tagName === 'H3') {
+        heading.style.fontSize = '1rem';
+        heading.style.fontWeight = 'bold';
+      } else if (heading.tagName === 'H4') {
+        heading.style.fontSize = '1rem';
+        heading.style.fontWeight = 'bold';
+      }
+    });
+    
+    // Apply styles to formatted text
+    const boldElements = tempDiv.querySelectorAll('b, strong');
+    boldElements.forEach(el => {
+      el.style.fontWeight = 'bold';
+    });
+    
+    const italicElements = tempDiv.querySelectorAll('i, em');
+    italicElements.forEach(el => {
+      el.style.fontStyle = 'italic';
+    });
+    
+    const underlineElements = tempDiv.querySelectorAll('u');
+    underlineElements.forEach(el => {
+      el.style.textDecoration = 'underline';
+    });
+    
+    return { __html: tempDiv.innerHTML };
   };
 
   return (
@@ -95,10 +155,11 @@ const NoteCard = ({ note, onPin, onDelete, onLock }) => {
           </div>
         </div>
         
-        {/* Description - Hidden on mobile, shown on desktop */}
-        <p className="hidden md:block text-sm text-gray-600 mb-3 line-clamp-1 flex-grow">
-          {capitalizeFirst(note.desc)}
-        </p>
+        {/* Description - Using dangerouslySetInnerHTML to render HTML */}
+        <div 
+          className="text-sm text-gray-600 mb-3 line-clamp-1 flex-gown note-description"
+          dangerouslySetInnerHTML={renderHTMLContent(note.desc)}
+        />
         
         <span className="inline-block bg-gradient-to-r from-green-100 to-green-100 text-green-700 text-xs font-semibold px-2 md:px-3 py-1 rounded-full mb-3 w-fit">
           {capitalizeFirst(note.category)}

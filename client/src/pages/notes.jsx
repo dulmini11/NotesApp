@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import NoteCard from "../components/NoteCard";
-import { ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText, Pin, Calendar, MoreVertical, Star, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText, Pin, Calendar, Zap } from "lucide-react";
 import LeafVideo from "../assets/leaf1.mp4";
 
 const Notes = () => {

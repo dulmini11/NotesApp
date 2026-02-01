@@ -26,7 +26,7 @@ const ViewNote = () => {
 
   // Function to safely render HTML content
   const renderHTMLContent = (html) => {
-    if (!html) return "No description provided.";
+    if (!html) return { __html: "No description provided." };
     
     // Create a temporary div to parse and style the HTML
     const tempDiv = document.createElement('div');
