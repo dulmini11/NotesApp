@@ -68,6 +68,10 @@ const Trash = () => {
     ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
     : 'bg-gray-100 hover:bg-gray-200 text-gray-700';
 
+  const bgDecoration1Class = theme === 'dark'
+    ? 'from-gray-700 to-gray-900/20'
+    : 'from-green-100 to-emerald-300/20';
+
   /* ---- FETCH TRASH NOTES ---- */
   useEffect(() => {
     const fetchTrashNotes = async () => {
@@ -159,6 +163,8 @@ const Trash = () => {
           overflow-auto
         `}
       >
+        {/* Decorative Background Elements */}
+        <div className={`absolute top-0 right-0 w-60 h-52 bg-gradient-to-br rounded-full blur-3xl ${bgDecoration1Class}`}></div>
         <div className="mb-6 md:mb-10">
           <div className="flex items-center gap-3 mb-2">
             <div className={`p-2 md:p-3 rounded-full shadow-lg ${trashIconBgClass}`}>

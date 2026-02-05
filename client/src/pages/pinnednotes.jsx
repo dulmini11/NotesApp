@@ -47,6 +47,10 @@ const PinnedNotes = () => {
     ? 'bg-gradient-to-br from-green-600 to-green-800'
     : 'bg-gradient-to-br from-green-500 to-green-900';
 
+  const bgDecoration1Class = theme === 'dark'
+    ? 'from-gray-600 to-gray-900/20'
+    : 'from-green-100 to-emerald-300/20';
+
   useEffect(() => {
     const fetchPinnedNotes = async () => {
       try {
@@ -125,6 +129,8 @@ const PinnedNotes = () => {
           overflow-auto
         `}
       >
+      {/* Decorative Background Elements */}
+      <div className={`absolute top-0 right-28 w-60 h-52 bg-gradient-to-br rounded-full blur-3xl ${bgDecoration1Class}`}></div>
         {/* VIDEO */}
         <div className="fixed top-0 right-2 md:right-4 z-50">
           <video

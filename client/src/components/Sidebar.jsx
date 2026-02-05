@@ -17,10 +17,10 @@ import {
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import UserImage from "../assets/user.jpg";
-import { useTheme } from "../contexts/ThemeContext"; // Add this import
+import { useTheme } from "../contexts/ThemeContext";
 
 const Sidebar = ({ expanded, setIsHovered }) => {
-  const { theme, toggleTheme } = useTheme(); // Add theme context
+  const { theme, toggleTheme } = useTheme();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -58,7 +58,7 @@ const Sidebar = ({ expanded, setIsHovered }) => {
   const HamburgerButton = () => (
     <button
       onClick={() => setIsMobileOpen(!isMobileOpen)}
-      className="mobile-menu-button md:hidden fixed top-6 left-6 z-50 p-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+      className="mobile-menu-button md:hidden fixed top-6 left-6 z-50 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
       style={{ marginBottom: '80px' }}
     >
       {isMobileOpen ? (
@@ -72,21 +72,25 @@ const Sidebar = ({ expanded, setIsHovered }) => {
   const MobilePopupMenu = () => (
     <div className={`
       mobile-menu-popup
-      fixed top-24 left-6 z-50 w-64 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800
+      fixed top-24 left-6 z-50 w-64 rounded-2xl shadow-2xl border
       transition-all duration-300 transform origin-top-left
       ${isMobileOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}
+      ${theme === 'dark' 
+        ? 'bg-gray-900 border-gray-800' 
+        : 'bg-white border-gray-200'
+      }
     `}>
       {/* Profile Section */}
-      <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+      <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-800' : 'border-gray-100'}`}>
         <div className="flex items-center gap-3">
           <img
             src={UserImage}
             alt="profile"
-            className="w-12 h-12 rounded-full border-2 border-green-500 dark:border-green-400"
+            className="w-12 h-12 rounded-full border-2 border-green-500"
           />
           <div>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Good Day 👋</p>
-            <h2 className="font-semibold text-gray-800 dark:text-gray-200">Omi.y</h2>
+            <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Good Day 👋</p>
+            <h2 className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Omi.y</h2>
           </div>
         </div>
       </div>
@@ -102,32 +106,45 @@ const Sidebar = ({ expanded, setIsHovered }) => {
         <MenuItemMobile icon={<Trash2 />} label="Trash" to="/trash" onClick={() => setIsMobileOpen(false)} />
       </div>
 
-      {/* Theme Toggle in Mobile Menu */}
-      <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800">
+      {/* Improved Theme Toggle in Mobile Menu */}
+      <div className={`px-4 py-3 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-100'}`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+          <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             {theme === 'dark' ? (
               <Moon className="w-4 h-4" />
             ) : (
               <Sun className="w-4 h-4" />
             )}
-            <span className="text-sm">Theme</span>
+            <span className="text-sm font-medium">{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
           </div>
           <button
             onClick={toggleTheme}
-            className="relative w-12 h-6 rounded-full p-1 transition-all duration-300 focus:outline-none bg-gradient-to-r from-blue-400 to-blue-300 dark:from-gray-700 dark:to-gray-800"
+            className="relative w-14 h-7 rounded-full p-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            style={{
+              background: theme === 'dark' 
+                ? 'linear-gradient(to right, #374151, #1f2937)' 
+                : 'linear-gradient(to right, #60a5fa, #3b82f6)'
+            }}
           >
             <div
-              className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-lg transform transition-transform duration-300 ${
-                theme === 'dark' ? 'translate-x-6' : 'translate-x-0'
+              className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transform transition-transform duration-300 flex items-center justify-center ${
+                theme === 'dark' 
+                  ? 'translate-x-7 bg-gray-700' 
+                  : 'translate-x-0 bg-white'
               }`}
-            />
+            >
+              {theme === 'dark' ? (
+                <Moon className="w-3 h-3 text-yellow-300" />
+              ) : (
+                <Sun className="w-3 h-3 text-yellow-500" />
+              )}
+            </div>
           </button>
         </div>
       </div>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800">
+      <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-100'}`}>
         <Link
           to="/add"
           onClick={() => setIsMobileOpen(false)}
@@ -138,7 +155,9 @@ const Sidebar = ({ expanded, setIsHovered }) => {
         </Link>
         
         <div className="flex justify-between px-2">
-          <button className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button className={`flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
+            theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-800'
+          }`}>
             <Settings className="w-4 h-4" />
             <span className="text-sm">Settings</span>
           </button>
@@ -156,9 +175,10 @@ const Sidebar = ({ expanded, setIsHovered }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={`
-        fixed top-0 left-3 h-screen bg-white dark:bg-gray-900 rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300 z-40
+        fixed top-0 left-3 h-screen rounded-3xl shadow-lg p-5 flex flex-col justify-between transition-all duration-300 z-40
         ${expanded ? "w-52" : "w-20"}
         hidden md:flex
+        ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}
       `}
     >
       {/* TOP SECTION */}
@@ -178,8 +198,8 @@ const Sidebar = ({ expanded, setIsHovered }) => {
               expanded ? "max-w-full opacity-100 ml-2" : "max-w-0 opacity-0 ml-0"
             }`}
           >
-            <p className="text-xs text-gray-400 dark:text-gray-500">Good Day 👋</p>
-            <h2 className="font-semibold text-gray-800 dark:text-gray-200">Omi.y</h2>
+            <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Good Day 👋</p>
+            <h2 className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Omi.y</h2>
           </div>
         </div>
 
@@ -197,34 +217,100 @@ const Sidebar = ({ expanded, setIsHovered }) => {
 
       {/* BOTTOM SECTION */}
       <div className="space-y-4 flex flex-col items-center">
-        {/* Theme Toggle */}
+        {/* Theme Toggle - IMPROVED VERSION */}
         <div className={`flex items-center gap-3 w-full ${expanded ? "justify-between" : "justify-center"}`}>
           {expanded && (
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              {theme === 'dark' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
-              <span className="text-sm">Theme</span>
+            <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+
+              <span className="text-sm font-medium">{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
             </div>
           )}
-          <button
-            onClick={toggleTheme}
-            className={`relative transition-all duration-300 ${
-              expanded ? "w-12 h-6" : "w-10 h-10 rounded-full"
-            } rounded-full p-1 focus:outline-none bg-gradient-to-r from-blue-400 to-blue-300 dark:from-gray-700 dark:to-gray-800`}
-          >
-            <div
-              className={`absolute top-1 rounded-full bg-white shadow-lg transform transition-transform duration-300 ${
-                theme === 'dark' 
-                  ? expanded ? 'translate-x-6' : 'translate-x-5' 
-                  : 'translate-x-0'
-              } ${
-                expanded ? 'w-4 h-4' : 'w-8 h-8'
-              }`}
-            />
-          </button>
+          
+          {expanded ? (
+            // EXPANDED STATE: Full toggle switch
+            <div className="relative group">
+              <button
+                onClick={toggleTheme}
+                className="relative w-14 h-7 rounded-full p-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden"
+                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {/* Background gradient */}
+                <div className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                  theme === 'dark' 
+                    ? 'bg-gradient-to-r from-gray-700 to-gray-800' 
+                    : 'bg-gradient-to-r from-green-700 to-green-300'
+                }`}></div>
+                
+                {/* Toggle knob with icon */}
+                <div
+                  className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transform transition-transform duration-300 flex items-center justify-center ${
+                    theme === 'dark' 
+                      ? 'translate-x-7 bg-gray-600' 
+                      : 'translate-x-0 bg-white'
+                  }`}
+                >
+                  {theme === 'dark' ? (
+                    <Moon className="w-3 h-3 text-green-300" />
+                  ) : (
+                    <Sun className="w-3 h-3 text-green-500" />
+                  )}
+                </div>
+                
+                {/* Decorative stars for dark mode */}
+                {theme === 'dark' && (
+                  <>
+                    <div className="absolute top-1 left-1 w-1 h-1 bg-white/30 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-1 right-2 w-0.5 h-0.5 bg-white/20 rounded-full animate-pulse delay-100"></div>
+                  </>
+                )}
+              </button>
+              
+              {/* Tooltip for expanded state */}
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+              </div>
+            </div>
+          ) : (
+            // MINIMIZED STATE: Compact icon button with animation
+            <div className="relative group">
+              <button
+                onClick={toggleTheme}
+                className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 hover:bg-gray-600' 
+                    : 'bg-blue-100 hover:bg-blue-200'
+                }`}
+                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {/* Animated background */}
+                <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                  theme === 'dark' 
+                    ? 'bg-gradient-to-br from-gray-600 to-gray-800' 
+                    : 'bg-gradient-to-br from-blue-50 to-blue-100'
+                }`}></div>
+                
+                {/* Icon with rotation animation */}
+                <div className={`relative z-10 transform transition-transform duration-500 ${
+                  theme === 'dark' ? 'rotate-0' : 'rotate-180'
+                }`}>
+                  {theme === 'dark' ? (
+                    <>
+                      <Moon className="w-5 h-5 text-green-300" />
+                    </>
+                  ) : (
+                    <>
+                      <Sun className="w-5 h-5 text-green-500" />
+                    </>
+                  )}
+                </div>
+              </button>
+              
+              {/* Tooltip for minimized state */}
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Create New Note */}
@@ -273,7 +359,12 @@ const MenuItem = ({ icon, label, expanded, to }) => {
   
   return (
     <Link to={to}>
-      <div className="flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300">
+      <div className={`flex items-center gap-3 px-1 py-3 rounded-xl cursor-pointer transition-all duration-300
+        ${theme === 'dark' 
+          ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-300' 
+          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+        }`}
+      >
         <div
           className={`transition-transform duration-500 ${
             expanded ? "scale-50" : "scale-75"
@@ -295,13 +386,20 @@ const MenuItem = ({ icon, label, expanded, to }) => {
 
 /* MOBILE MENU ITEM COMPONENT */
 const MenuItemMobile = ({ icon, label, to, onClick }) => {
+  const { theme } = useTheme();
+  
   return (
     <Link to={to} onClick={onClick}>
-      <div className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 my-1">
-        <div className="text-gray-500 dark:text-gray-500">
+      <div className={`flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-300 my-1
+        ${theme === 'dark' 
+          ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-300' 
+          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+        }`}
+      >
+        <div className={`${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
           {icon}
         </div>
-        <span className="text-sm font-medium dark:text-gray-300">
+        <span className="text-sm font-medium">
           {label}
         </span>
       </div>

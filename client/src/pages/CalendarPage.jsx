@@ -24,11 +24,15 @@ const CalendarPage = () => {
     : 'bg-gradient-to-br from-slate-50 via-green-100 to-emerald-50';
 
   const bgDecoration1Class = theme === 'dark'
-    ? 'from-gray-800 to-gray-900/20'
+    ? 'from-gray-700 to-gray-900/20'
     : 'from-green-200 to-emerald-300/20';
 
   const bgDecoration2Class = theme === 'dark'
-    ? 'from-gray-800 to-gray-700/20'
+    ? 'from-gray-700 to-gray-700/20'
+    : 'from-green-200 to-cyan-300/20';
+
+  const bgDecoration3Class = theme === 'dark'
+    ? 'from-gray-700 to-gray-700/20'
     : 'from-green-200 to-cyan-300/20';
 
   const cardBgClass = theme === 'dark'
@@ -356,6 +360,7 @@ const CalendarPage = () => {
 
           {/* MAIN CALENDAR */}
           <div className={`flex-1 border-2 rounded-3xl p-4 md:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group ${calendarCardBgClass}`}>
+            <div className={`absolute bottom-20 right-0 w-80 h-80 bg-gradient-to-tr rounded-full blur-3xl ${bgDecoration3Class}`}></div>
             <div className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
               theme === 'dark' ? 'from-green-600/5 to-cyan-600/5' : 'from-green-500/5 to-cyan-500/5'
             }`}></div>
