@@ -6,8 +6,10 @@ import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
 import pinnoteVideo from "../assets/pinnote.mp4";
 import { Sparkles, Pin } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 const PinnedNotes = () => {
+  const { theme } = useTheme();
   const [notes, setNotes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date");
@@ -15,6 +17,35 @@ const PinnedNotes = () => {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [isSidebarMinimized] = useState(true);
   const expanded = !isSidebarMinimized || isSidebarHovered;
+
+  // Theme-based styling - FIXED: Added light mode background
+  const mainBgClass = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+    : 'bg-gradient-to-br from-lime-50 to-teal-50'; // ADDED LIGHT MODE BACKGROUND
+
+  const headerGradientClass = theme === 'dark'
+    ? 'bg-gradient-to-r from-green-300 to-green-500'
+    : 'bg-gradient-to-r from-green-900 to-green-600';
+
+  const subtitleClass = theme === 'dark'
+    ? 'text-gray-400'
+    : 'text-gray-600';
+
+  const emptyStateBgClass = theme === 'dark'
+    ? 'bg-gray-800'
+    : 'bg-gray-100';
+
+  const emptyStateIconClass = theme === 'dark'
+    ? 'text-gray-600'
+    : 'text-gray-400';
+
+  const emptyStateTextClass = theme === 'dark'
+    ? 'text-gray-400'
+    : 'text-gray-500';
+
+  const pinIconBgClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-green-600 to-green-800'
+    : 'bg-gradient-to-br from-green-500 to-green-900';
 
   useEffect(() => {
     const fetchPinnedNotes = async () => {
@@ -84,7 +115,7 @@ const PinnedNotes = () => {
   });
 
   return (
-    <div className="flex">
+    <div className={`flex min-h-screen ${mainBgClass} transition-colors duration-300`}>
       <Sidebar expanded={expanded} setIsHovered={setIsSidebarHovered} />
 
       {/* MAIN CONTENT */}
@@ -110,14 +141,14 @@ const PinnedNotes = () => {
 
         <div className="mb-6 md:mb-10">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 md:p-3 bg-gradient-to-br from-green-500 to-green-900 rounded-full shadow-lg">
+            <div className={`p-2 md:p-3 rounded-full shadow-lg ${pinIconBgClass}`}>
               <Pin className="text-white w-4 h-4 md:w-5 md:h-5" />
             </div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-green-900 to-green-600 bg-clip-text text-transparent">
+            <h1 className={`text-2xl md:text-3xl lg:text-4xl font-black bg-clip-text text-transparent ${headerGradientClass}`}>
               Pinned Notes
             </h1>
           </div>
-          <p className="text-sm text-gray-600 ml-10 md:ml-16">
+          <p className={`text-sm ml-10 md:ml-16 ${subtitleClass}`}>
             Quickly access your pinned notes
           </p>
         </div>
@@ -138,10 +169,10 @@ const PinnedNotes = () => {
         {/* NOTES GRID / EMPTY STATE */}
         {sortedNotes.length === 0 ? (
           <div className="text-center py-10 md:py-20">
-            <div className="inline-block bg-gray-100 rounded-full p-4 md:p-6 mb-4">
-              <Sparkles className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
+            <div className={`inline-block rounded-full p-4 md:p-6 mb-4 ${emptyStateBgClass}`}>
+              <Sparkles className={`w-8 h-8 md:w-12 md:h-12 ${emptyStateIconClass}`} />
             </div>
-            <p className="text-gray-500 font-medium text-sm md:text-base">
+            <p className={`font-medium text-sm md:text-base ${emptyStateTextClass}`}>
               No pinned notes yet. Pin some notes to see them here!
             </p>
             <div className="mt-4 md:mt-6 flex justify-center">
