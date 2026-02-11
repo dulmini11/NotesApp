@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTheme } from "../contexts/ThemeContext";
 
 const Update = () => {
+  const { theme } = useTheme(); // Get current theme
   const [book, setBook] = useState({
     title: "",
     desc: "",
@@ -18,6 +20,95 @@ const Update = () => {
   const editorRef = useRef(null);
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState("p");
+
+  // Theme-based classes
+  const mainBgClass = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+    : 'bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50';
+
+  const cardBgClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-gray-800 to-gray-900'
+    : 'bg-white/80';
+
+  const cardBorderClass = theme === 'dark'
+    ? 'border-gray-700'
+    : 'border-green-100';
+
+  const coverBgClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-gray-700/20 to-gray-900/20'
+    : 'bg-gradient-to-br from-[#22cb0b]/20 to-[#0a7e04]/20';
+
+  const coverEmptyBgClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-gray-700/20 to-gray-900/20'
+    : 'bg-gradient-to-br from-[#22cb0b]/10 via-green-50 to-[#0a7e04]/10';
+
+  const categoryIconClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-green-500 to-green-700'
+    : 'bg-gradient-to-br from-[#22cb0b] to-[#0a7e04]';
+
+  const categoryHoverClass = theme === 'dark'
+    ? 'hover:bg-gradient-to-r hover:from-green-900/20 hover:to-transparent'
+    : 'hover:bg-gradient-to-r hover:from-[#22cb0b]/5 hover:to-transparent';
+
+  const categoryTextClass = theme === 'dark'
+    ? 'text-gray-200 placeholder-gray-500'
+    : 'text-[#0a7e04] placeholder-gray-400';
+
+  const toolbarBgClass = theme === 'dark'
+    ? 'bg-gray-700/50 border-gray-600'
+    : 'bg-green-50/50 border-green-100';
+
+  const toolbarButtonClass = theme === 'dark'
+    ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-200'
+    : 'bg-white border-green-200 hover:bg-green-100 text-black';
+
+  const editorBgClass = theme === 'dark'
+    ? 'hover:bg-gradient-to-br hover:from-gray-700/50 hover:to-transparent text-gray-200'
+    : 'hover:bg-gradient-to-br hover:from-green-50/50 hover:to-transparent text-gray-700';
+
+  const tipBgClass = theme === 'dark'
+    ? 'bg-blue-900/30 border-blue-800'
+    : 'bg-blue-50 border-blue-100';
+
+  const tipTextClass = theme === 'dark'
+    ? 'text-blue-300'
+    : 'text-blue-700';
+
+  const metaTextClass = theme === 'dark'
+    ? 'text-gray-400'
+    : 'text-gray-500';
+
+  const backButtonBgClass = theme === 'dark'
+    ? 'bg-gray-800 text-green-300 hover:bg-green-900 hover:text-white border-gray-700'
+    : 'bg-white text-[#0a7e04] hover:bg-[#22cb0b] hover:text-white border-green-200';
+
+  const cancelButtonClass = theme === 'dark'
+    ? 'text-green-300 border-gray-700 hover:bg-gray-700 hover:text-green-400'
+    : 'text-[#0a7e04] border-green-100 hover:bg-green-50 hover:text-[#22cb0b]';
+
+  const updateButtonClass = theme === 'dark'
+    ? 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700'
+    : 'bg-gradient-to-r from-[#22cb0b] to-[#0a7e04] hover:from-[#0a7e04] hover:to-[#22cb0b]';
+
+  const loadingSpinnerClass = theme === 'dark'
+    ? 'border-green-400'
+    : 'border-[#22cb0b]';
+
+  const loadingTextClass = theme === 'dark'
+    ? 'text-green-400'
+    : 'text-[#0a7e04]';
+
+  const dividerClass = theme === 'dark'
+    ? 'border-gray-700'
+    : 'border-green-100';
+
+  const coverIconClass = theme === 'dark'
+    ? 'text-green-500/40'
+    : 'text-[#22cb0b]/40';
+
+  const coverLabelClass = theme === 'dark'
+    ? 'text-green-400'
+    : 'text-[#0a7e04]';
 
   // Fetch existing note data
   useEffect(() => {
@@ -47,11 +138,11 @@ const Update = () => {
         editorRef.current.innerHTML = book.desc;
         applyListStyles();
       } else {
-        editorRef.current.innerHTML = '<p style="color: #9ca3af;">Start typing here...</p>';
+        editorRef.current.innerHTML = `<p style="color: ${theme === 'dark' ? '#9ca3af' : '#9ca3af'};">Start typing here...</p>`;
       }
       setIsEditorReady(true);
     }
-  }, [isEditorReady, book.desc, loading]);
+  }, [isEditorReady, book.desc, loading, theme]);
 
   // Apply styles to lists and headings
   const applyListStyles = () => {
@@ -262,18 +353,18 @@ const Update = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50">
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${mainBgClass}`}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-[#22cb0b] border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-2xl font-semibold text-[#0a7e04]">Loading...</div>
+          <div className={`w-16 h-16 border-4 border-t-transparent rounded-full animate-spin ${loadingSpinnerClass}`}></div>
+          <div className={`text-2xl font-semibold ${loadingTextClass}`}>Loading...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8">
-
+    <div className={`min-h-screen p-4 md:p-8 transition-colors duration-300 ${mainBgClass}`}>
+      
       {/* Main Container */}
       <div className="relative z-10 max-w-7xl mx-auto">
         
@@ -281,7 +372,7 @@ const Update = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate("/allnotes")}
-            className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#0a7e04] hover:text-white bg-white hover:bg-[#22cb0b] rounded-xl shadow-2xl hover:shadow-2xl transition-all duration-300 border border-green-200">
+            className={`group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl shadow transition-all border ${backButtonBgClass}`}>
             <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -290,12 +381,19 @@ const Update = () => {
         </div>
 
         {/* Enhanced Card with glassmorphism effect */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-green-100 overflow-hidden hover:shadow-green-200/50 transition-all duration-500">
+        <div className={`backdrop-blur-xl rounded-3xl shadow-2xl border overflow-hidden transition-all duration-500 ${cardBgClass} ${cardBorderClass}`}>
+          
+          {/* Glow Effect */}
+          <div className={`absolute inset-0 rounded-3xl blur-2xl opacity-20 ${
+            theme === 'dark' 
+              ? 'bg-gradient-to-r from-gray-700 to-green-900/50' 
+              : 'bg-gradient-to-r from-green-200 to-emerald-200'
+          }`}></div>
           
           {/* Cover Image Section with gradient overlay */}
           <div className="relative group">
             {book.cover ? (
-              <div className="relative w-full h-64 bg-gradient-to-br from-[#22cb0b]/20 to-[#0a7e04]/20">
+              <div className={`relative w-full h-64 ${coverBgClass}`}>
                 <img 
                   src={book.cover} 
                   alt="Cover" 
@@ -304,17 +402,21 @@ const Update = () => {
                     e.target.style.display = 'none';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a7e04]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300`}></div>
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <span className="text-white text-sm font-semibold px-6 py-3 bg-[#22cb0b] hover:bg-[#0a7e04] rounded-xl shadow-lg backdrop-blur-sm transition-all">
+                  <span className={`text-white text-sm font-semibold px-6 py-3 rounded-xl shadow-lg backdrop-blur-sm transition-all ${
+                    theme === 'dark' 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'bg-[#22cb0b] hover:bg-[#0a7e04]'
+                  }`}>
                     Change cover
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="relative w-full h-48 bg-gradient-to-br from-[#22cb0b]/10 via-green-50 to-[#0a7e04]/10 flex items-center justify-center overflow-hidden">
+              <div className={`relative w-full h-48 flex items-center justify-center overflow-hidden ${coverEmptyBgClass}`}>
                 <div className="absolute inset-0 shimmer-effect"></div>
-                <svg className="relative z-10 w-16 h-16 text-[#22cb0b]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`relative z-10 w-16 h-16 ${coverIconClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -322,11 +424,11 @@ const Update = () => {
           </div>
 
           {/* Content Section */}
-          <div className="p-8 md:p-12">
+          <div className="relative p-8 md:p-12">
             
             {/* Cover URL Input */}
             <div className="mb-8 group">
-              <div className="flex items-center text-xs font-bold text-[#0a7e04] mb-2 opacity-60 group-hover:opacity-100 transition-all">
+              <div className={`flex items-center text-xs font-bold mb-2 opacity-60 group-hover:opacity-100 transition-all ${coverLabelClass}`}>
                 <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
@@ -338,7 +440,11 @@ const Update = () => {
                 value={book.cover}
                 onChange={handleChange}
                 placeholder="Paste the URL of an image..."
-                className="w-full px-0 py-3 text-sm text-gray-700 border-0 border-b-2 border-green-100 hover:border-[#22cb0b]/50 focus:border-[#22cb0b] outline-none transition-all bg-transparent placeholder-gray-400"
+                className={`w-full px-0 py-3 text-sm border-0 border-b-2 outline-none transition-all bg-transparent ${
+                  theme === 'dark'
+                    ? 'border-gray-700 focus:border-green-500 text-gray-200 placeholder-gray-500'
+                    : 'border-green-100 hover:border-[#22cb0b]/50 focus:border-[#22cb0b] text-gray-700 placeholder-gray-400'
+                }`}
               />
             </div>
 
@@ -350,14 +456,20 @@ const Update = () => {
                 value={book.title}
                 onChange={handleChange}
                 placeholder="Untitled"
-                className="w-full px-0 py-3 text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0a7e04] to-[#22cb0b] border-0 outline-none bg-transparent placeholder-gray-300 transition-all"
-                style={{ caretColor: '#22cb0b' }}
+                className={`w-full px-0 py-3 text-4xl md:text-5xl font-black text-transparent bg-clip-text border-0 outline-none bg-transparent transition-all ${
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-green-300 to-green-500'
+                    : 'bg-gradient-to-r from-[#0a7e04] to-[#22cb0b]'
+                }`}
+                style={{ caretColor: theme === 'dark' ? '#22c55e' : '#22cb0b' }}
               />
             </div>
 
             {/* Category Input */}
-            <div className="mb-8 flex items-center gap-3 group p-3 rounded-xl hover:bg-gradient-to-r hover:from-[#22cb0b]/5 hover:to-transparent transition-all">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-[#22cb0b] to-[#0a7e04] shadow-lg shadow-green-200">
+            <div className={`mb-8 flex items-center gap-3 group p-3 rounded-xl transition-all ${categoryHoverClass}`}>
+              <div className={`flex items-center justify-center w-10 h-10 rounded-lg shadow-lg ${categoryIconClass} ${
+                theme === 'dark' ? 'shadow-green-900/30' : 'shadow-green-200'
+              }`}>
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
@@ -368,17 +480,21 @@ const Update = () => {
                 value={book.category}
                 onChange={handleChange}
                 placeholder="Add a category..."
-                className="flex-1 px-0 py-2 text-base font-medium text-[#0a7e04] border-0 outline-none bg-transparent placeholder-gray-400"
-                style={{ caretColor: '#22cb0b' }}
+                className={`flex-1 px-0 py-2 text-base font-medium border-0 outline-none bg-transparent ${categoryTextClass}`}
+                style={{ caretColor: theme === 'dark' ? '#22c55e' : '#22cb0b' }}
               />
             </div>
 
             {/* Rich Text Editor Toolbar */}
-            <div className="mb-4 flex flex-wrap gap-2 p-3 bg-green-50/50 rounded-xl border border-green-100">
+            <div className={`mb-4 flex flex-wrap gap-2 p-3 rounded-xl border ${toolbarBgClass}`}>
               {/* Text styles dropdown */}
               <div className="flex items-center gap-1">
                 <select
-                  className="px-2 py-1.5 text-xs bg-white border border-green-200 rounded-lg hover:bg-green-100 transition cursor-pointer outline-none"
+                  className={`px-2 py-1.5 text-xs border rounded-lg transition cursor-pointer outline-none ${
+                    theme === 'dark'
+                      ? 'bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700'
+                      : 'bg-white border-green-200 hover:bg-green-100 text-gray-800'
+                  }`}
                   onChange={(e) => formatBlock(e.target.value)}
                   value={selectedStyle}
                 >
@@ -395,37 +511,37 @@ const Update = () => {
                 <button
                   type="button"
                   onClick={() => formatText('bold')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Bold (Ctrl+B)"
                 >
-                  <span className="font-bold text-sm text-black">B</span>
+                  <span className="font-bold text-sm">B</span>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => formatText('italic')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Italic (Ctrl+I)"
                 >
-                  <span className="italic text-sm text-black">I</span>
+                  <span className="italic text-sm">I</span>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => formatText('underline')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Underline (Ctrl+U)"
                 >
-                  <span className="underline text-sm text-black">U</span>
+                  <span className="underline text-sm">U</span>
                 </button>
                 
                 <button
                   type="button"
                   onClick={clearFormatting}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Clear Formatting"
                 >
-                  <span className="text-sm text-black">⎌</span>
+                  <span className="text-sm">⎌</span>
                 </button>
               </div>
 
@@ -434,19 +550,19 @@ const Update = () => {
                 <button
                   type="button"
                   onClick={() => insertList('insertUnorderedList')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Bullet List (Toggle)"
                 >
-                  <span className="text-lg text-black">•</span>
+                  <span className="text-lg">•</span>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => insertList('insertOrderedList')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Numbered List (Toggle)"
                 >
-                  <span className="text-sm text-black">1.</span>
+                  <span className="text-sm">1.</span>
                 </button>
               </div>
 
@@ -455,10 +571,10 @@ const Update = () => {
                 <button
                   type="button"
                   onClick={() => formatText('justifyLeft')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Align Left"
                 >
-                  <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                   </svg>
                 </button>
@@ -466,10 +582,10 @@ const Update = () => {
                 <button
                   type="button"
                   onClick={() => formatText('justifyCenter')}
-                  className="w-8 h-8 flex items-center justify-center bg-white border border-green-200 rounded-lg hover:bg-green-100 transition"
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition ${toolbarButtonClass}`}
                   title="Align Center"
                 >
-                  <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 5a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z" clipRule="evenodd" />
                   </svg>
                 </button>
@@ -477,33 +593,37 @@ const Update = () => {
             </div>
 
             {/* Rich Text Editor Area */}
-            <div className="mb-8 p-4 rounded-xl hover:bg-gradient-to-br hover:from-green-50/50 hover:to-transparent transition-all min-h-[300px]">
+            <div className={`mb-8 p-4 rounded-xl transition-all min-h-[300px] ${editorBgClass}`}>
               <div
                 ref={editorRef}
                 contentEditable
                 onInput={handleEditorChange}
                 onBlur={handleEditorChange}
-                className="w-full min-h-[300px] px-0 py-2 text-base text-gray-700 leading-relaxed border-0 outline-none resize-none bg-transparent focus:outline-none focus:ring-0 cursor-text"
+                className={`w-full min-h-[300px] px-0 py-2 text-base leading-relaxed border-0 outline-none resize-none bg-transparent focus:outline-none focus:ring-0 cursor-text ${
+                  theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
+                }`}
                 style={{
                   lineHeight: '1.6',
                   fontSize: '16px',
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                  caretColor: '#22cb0b'
+                  caretColor: theme === 'dark' ? '#22c55e' : '#22cb0b'
                 }}
               />
             </div>
 
             {/* User tip */}
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-              <p className="text-xs text-blue-700">
+            <div className={`mb-4 p-3 border rounded-lg ${tipBgClass}`}>
+              <p className={`text-xs ${tipTextClass}`}>
                 <strong>Tip:</strong> Select text and use the toolbar above to format. Your formatting will be saved as HTML and displayed properly when viewing notes.
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t-2 border-gradient-to-r from-green-100 to-transparent">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <svg className="w-4 h-4 text-[#22cb0b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t ${dividerClass}`}>
+              <div className={`flex items-center gap-2 text-xs ${metaTextClass}`}>
+                <svg className={`w-4 h-4 ${
+                  theme === 'dark' ? 'text-green-400' : 'text-[#22cb0b]'
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Last edited {new Date().toLocaleDateString()}
@@ -512,13 +632,17 @@ const Update = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => navigate("/allnotes")}
-                  className="px-6 py-3 text-sm font-semibold text-[#0a7e04] hover:text-[#22cb0b] hover:bg-green-50 rounded-xl transition-all duration-300 border-2 border-green-100 hover:border-[#22cb0b]/30">
+                  className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 border-2 ${cancelButtonClass}`}>
                   Cancel
                 </button>
 
                 <button
                   onClick={handleClick}
-                  className="group relative px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#22cb0b] to-[#0a7e04] hover:from-[#0a7e04] hover:to-[#22cb0b] rounded-xl shadow-lg shadow-green-300/50 hover:shadow-xl hover:shadow-green-400/50 transition-all duration-300 overflow-hidden">
+                  className={`group relative px-8 py-3 text-sm font-bold text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
+                    theme === 'dark'
+                      ? 'shadow-green-900/50 hover:shadow-green-800/50'
+                      : 'shadow-green-300/50 hover:shadow-green-400/50'
+                  } ${updateButtonClass}`}>
                   <span className="relative z-10 flex items-center gap-2">
                     Update Note
                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
