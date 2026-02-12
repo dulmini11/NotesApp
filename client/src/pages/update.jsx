@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from "../contexts/ThemeContext";
+import axios from "axios";
 
 const Update = () => {
   const { theme } = useTheme(); // Get current theme
@@ -11,6 +12,9 @@ const Update = () => {
     category: "",
   });
   const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -109,6 +113,27 @@ const Update = () => {
   const coverLabelClass = theme === 'dark'
     ? 'text-green-400'
     : 'text-[#0a7e04]';
+
+  // Image upload function
+  const uploadImage = async (file) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await axios.post("http://localhost:8800/upload", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setBook(prev => ({ ...prev, cover: response.data.url }));
+      setImageError(false);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Failed to upload image. Please try again or use a URL instead.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Fetch existing note data
   useEffect(() => {
@@ -232,6 +257,9 @@ const Update = () => {
 
   const handleChange = (e) => {
     setBook(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === 'cover') {
+      setImageError(false);
+    }
   };
 
   const handleEditorChange = () => {
@@ -327,6 +355,7 @@ const Update = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
+
     try {
       // Clean up empty paragraphs before saving
       if (editorRef.current) {
@@ -348,7 +377,13 @@ const Update = () => {
       navigate("/allnotes");
     } catch (err) {
       console.log(err);
+      alert("Failed to update note. Please try again.");
     }
+  };
+
+  // Function to trigger file input click
+  const triggerFileInput = () => {
+    document.getElementById('updateCoverImageInput').click();
   };
 
   if (loading) {
@@ -390,37 +425,162 @@ const Update = () => {
               : 'bg-gradient-to-r from-green-200 to-emerald-200'
           }`}></div>
           
-          {/* Cover Image Section with gradient overlay */}
+          {/* Cover Image Section with hover change button */}
           <div className="relative group">
-            {book.cover ? (
+            {book.cover && !imageError ? (
               <div className={`relative w-full h-64 ${coverBgClass}`}>
                 <img 
                   src={book.cover} 
                   alt="Cover" 
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
+                  onError={() => setImageError(true)}
                 />
-                <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300`}></div>
+                {/* Dark overlay on hover */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                
+                {/* Change Image Button - Appears on hover */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <span className={`text-white text-sm font-semibold px-6 py-3 rounded-xl shadow-lg backdrop-blur-sm transition-all ${
-                    theme === 'dark' 
-                      ? 'bg-green-600 hover:bg-green-700' 
-                      : 'bg-[#22cb0b] hover:bg-[#0a7e04]'
-                  }`}>
-                    Change cover
-                  </span>
+                  <button
+                    onClick={triggerFileInput}
+                    disabled={isUploading}
+                    className={`flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold rounded-xl shadow-lg backdrop-blur-sm transition-all transform hover:scale-105 ${
+                      theme === 'dark' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-[#22cb0b] hover:bg-[#0a7e04]'
+                    } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin border-white"></div>
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Change Cover</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {/* Remove Image Button - Optional, appears on hover */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <button
+                    onClick={() => {
+                      setBook(prev => ({ ...prev, cover: "" }));
+                      setImageError(false);
+                    }}
+                    className="p-2 bg-red-500/80 hover:bg-red-600 text-white rounded-full backdrop-blur-sm transition-all hover:scale-110"
+                    title="Remove cover image"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className={`relative w-full h-48 flex items-center justify-center overflow-hidden ${coverEmptyBgClass}`}>
-                <div className="absolute inset-0 shimmer-effect"></div>
-                <svg className={`relative z-10 w-16 h-16 ${coverIconClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+              <div 
+                className={`relative w-full h-48 flex flex-col items-center justify-center overflow-hidden ${coverEmptyBgClass} cursor-pointer border-2 border-dashed ${
+                  theme === 'dark'
+                    ? `${isDragging ? 'border-green-500 bg-gray-700/50' : 'border-gray-600 hover:border-green-500'}`
+                    : `${isDragging ? 'border-[#22cb0b] bg-green-100/50' : 'border-green-200 hover:border-[#22cb0b]'}`
+                } transition-all`}
+                onClick={() => !isUploading && triggerFileInput()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isUploading) setIsDragging(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                  
+                  if (isUploading) return;
+                  
+                  const file = e.dataTransfer.files[0];
+                  if (file && file.type.startsWith('image/')) {
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert("Image size too large. Please select an image under 5MB.");
+                      return;
+                    }
+                    await uploadImage(file);
+                  }
+                }}
+              >
+                {isUploading ? (
+                  <>
+                    <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin border-green-500"></div>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Uploading image...
+                    </p>
+                  </>
+                ) : imageError ? (
+                  <>
+                    <svg className={`w-16 h-16 ${theme === 'dark' ? 'text-red-500/40' : 'text-red-500/40'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Image failed to load. Click or drag to replace.
+                    </p>
+                    <button
+                      onClick={triggerFileInput}
+                      className={`mt-3 px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
+                        theme === 'dark'
+                          ? 'bg-gray-700 text-green-300 hover:bg-gray-600'
+                          : 'bg-green-100 text-[#0a7e04] hover:bg-green-200'
+                      }`}
+                    >
+                      Select Image
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <svg className={`w-16 h-16 ${coverIconClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Drag & drop an image here or click to select
+                    </p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Supports: JPG, PNG, GIF, WEBP (Max 5MB)
+                    </p>
+                  </>
+                )}
               </div>
             )}
+            
+            {/* Hidden file input */}
+            <input
+              type="file"
+              id="updateCoverImageInput"
+              accept="image/*"
+              className="hidden"
+              disabled={isUploading}
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (file && !isUploading) {
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert("Image size too large. Please select an image under 5MB.");
+                    return;
+                  }
+                  await uploadImage(file);
+                }
+                e.target.value = ''; // Reset input
+              }}
+            />
           </div>
 
           {/* Content Section */}
@@ -440,12 +600,16 @@ const Update = () => {
                 value={book.cover}
                 onChange={handleChange}
                 placeholder="Paste the URL of an image..."
+                disabled={isUploading}
                 className={`w-full px-0 py-3 text-sm border-0 border-b-2 outline-none transition-all bg-transparent ${
                   theme === 'dark'
-                    ? 'border-gray-700 focus:border-green-500 text-gray-200 placeholder-gray-500'
-                    : 'border-green-100 hover:border-[#22cb0b]/50 focus:border-[#22cb0b] text-gray-700 placeholder-gray-400'
+                    ? 'border-gray-700 focus:border-green-500 text-gray-200 placeholder-gray-500 disabled:opacity-50'
+                    : 'border-green-100 hover:border-[#22cb0b]/50 focus:border-[#22cb0b] text-gray-700 placeholder-gray-400 disabled:opacity-50'
                 }`}
               />
+              <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                Or use the upload button above to select an image from your computer
+              </p>
             </div>
 
             {/* Title Input */}
@@ -487,7 +651,7 @@ const Update = () => {
 
             {/* Rich Text Editor Toolbar */}
             <div className={`mb-4 flex flex-wrap gap-2 p-3 rounded-xl border ${toolbarBgClass}`}>
-              {/* Text styles dropdown */}
+              {/* ... (keep all your existing toolbar buttons) ... */}
               <div className="flex items-center gap-1">
                 <select
                   className={`px-2 py-1.5 text-xs border rounded-lg transition cursor-pointer outline-none ${
@@ -506,7 +670,6 @@ const Update = () => {
                 </select>
               </div>
 
-              {/* Text formatting buttons */}
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -545,7 +708,6 @@ const Update = () => {
                 </button>
               </div>
 
-              {/* List buttons */}
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -566,7 +728,6 @@ const Update = () => {
                 </button>
               </div>
 
-              {/* Text alignment */}
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -632,22 +793,28 @@ const Update = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => navigate("/allnotes")}
-                  className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 border-2 ${cancelButtonClass}`}>
+                  disabled={isUploading}
+                  className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 border-2 ${cancelButtonClass} ${
+                    isUploading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}>
                   Cancel
                 </button>
 
                 <button
                   onClick={handleClick}
+                  disabled={isUploading}
                   className={`group relative px-8 py-3 text-sm font-bold text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
                     theme === 'dark'
                       ? 'shadow-green-900/50 hover:shadow-green-800/50'
                       : 'shadow-green-300/50 hover:shadow-green-400/50'
-                  } ${updateButtonClass}`}>
+                  } ${updateButtonClass} ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <span className="relative z-10 flex items-center gap-2">
-                    Update Note
-                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
+                    {isUploading ? 'Uploading...' : 'Update Note'}
+                    {!isUploading && (
+                      <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
                   </span>
                   <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                 </button>
