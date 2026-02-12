@@ -7,6 +7,7 @@ const ViewNote = () => {
   const { theme } = useTheme(); // Get current theme
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -195,15 +196,32 @@ const ViewNote = () => {
               : 'bg-gradient-to-r from-green-200 to-emerald-200'
           }`}></div>
 
-          {/* Cover Image */}
+          {/* Cover Image - FIXED VERSION */}
           {note.cover ? (
-            <div className="w-full h-64 bg-gradient-to-br from-gray-700/20 to-gray-900/20">
-              <img
-                src={note.cover}
-                alt="Cover"
-                className="w-full h-full object-cover"
-                onError={(e) => (e.target.style.display = "none")}
-              />
+            <div className={`w-full h-64 ${coverBgClass}`}>
+              {!imageError ? (
+                <img
+                  src={note.cover}
+                  alt="Cover"
+                  className="w-full h-full object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <svg className={`w-16 h-16 ${
+                    theme === 'dark' ? 'text-red-500/40' : 'text-red-500/40'
+                  }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <p className={`mt-2 text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    Image failed to load
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div className={`w-full h-48 flex items-center justify-center ${coverBgClass}`}>
