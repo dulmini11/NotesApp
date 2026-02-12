@@ -11,13 +11,16 @@ const Add = () => {
     cover: "",
     category: "",
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState("p");
 
-  // Theme-based classes
+  // Theme-based classes - EXACTLY SAME AS ADD PAGE ORIGINAL
   const mainBgClass = theme === 'dark' 
     ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
     : 'bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50';
@@ -31,6 +34,10 @@ const Add = () => {
     : 'border-green-100';
 
   const coverBgClass = theme === 'dark'
+    ? 'bg-gradient-to-br from-gray-700/20 to-gray-900/20'
+    : 'bg-gradient-to-br from-[#22cb0b]/10 via-green-50 to-[#0a7e04]/10';
+
+  const coverEmptyBgClass = theme === 'dark'
     ? 'bg-gradient-to-br from-gray-700/20 to-gray-900/20'
     : 'bg-gradient-to-br from-[#22cb0b]/10 via-green-50 to-[#0a7e04]/10';
 
@@ -65,6 +72,36 @@ const Add = () => {
   const addButtonClass = theme === 'dark'
     ? 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700'
     : 'bg-gradient-to-r from-[#22cb0b] to-[#0a7e04]';
+
+  const coverIconClass = theme === 'dark'
+    ? 'text-green-500/40'
+    : 'text-[#22cb0b]/40';
+
+  // Image upload function - FROM UPDATE PAGE
+  const uploadImage = async (file) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await axios.post("http://localhost:8800/upload", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setBook(prev => ({ ...prev, cover: response.data.url }));
+      setImageError(false);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Failed to upload image. Please try again or use a URL instead.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Function to trigger file input click - FROM UPDATE PAGE
+  const triggerFileInput = () => {
+    document.getElementById('addCoverImageInput').click();
+  };
 
   // Initialize editor when component mounts
   useEffect(() => {
@@ -167,6 +204,9 @@ const Add = () => {
 
   const handleChange = (e) => {
     setBook((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === 'cover') {
+      setImageError(false);
+    }
   };
 
   const handleEditorChange = () => {
@@ -267,14 +307,17 @@ const Add = () => {
       
       const htmlContent = editorRef.current?.innerHTML || "";
       const noteData = {
-        ...book,
+        title: book.title,
+        category: book.category || "Uncategorized",
         desc: htmlContent,
+        cover: book.cover || "", // Empty string if no cover image
       };
       
       await axios.post("http://localhost:8800/note", noteData);
       navigate("/allnotes");
     } catch (err) {
       console.log(err);
+      alert("Failed to add note. Please try again.");
     }
   };
 
@@ -310,28 +353,162 @@ const Add = () => {
               : 'bg-gradient-to-r from-green-200 to-emerald-200'
           }`}></div>
 
-          {/* Cover image preview */}
-          <div className="relative">
-            {book.cover ? (
-              <div className={`w-full h-64 ${coverBgClass}`}>
+          {/* Cover Image Section with hover change button */}
+          <div className="relative group">
+            {book.cover && !imageError ? (
+              <div className={`relative w-full h-64 ${coverBgClass}`}>
                 <img
                   src={book.cover}
                   alt="Cover"
                   className="w-full h-full object-cover"
-                  onError={(e) => (e.target.style.display = "none")}
+                  onError={() => setImageError(true)}
                 />
+                {/* Dark overlay on hover */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                
+                {/* Change Image Button - Appears on hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <button
+                    onClick={triggerFileInput}
+                    disabled={isUploading}
+                    className={`flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold rounded-xl shadow-lg backdrop-blur-sm transition-all transform hover:scale-105 ${
+                      theme === 'dark' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-[#22cb0b] hover:bg-[#0a7e04]'
+                    } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin border-white"></div>
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Change Cover</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {/* Remove Image Button - Appears on hover */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <button
+                    onClick={() => {
+                      setBook(prev => ({ ...prev, cover: "" }));
+                      setImageError(false);
+                    }}
+                    className="p-2 bg-red-500/80 hover:bg-red-600 text-white rounded-full backdrop-blur-sm transition-all hover:scale-110"
+                    title="Remove cover image"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className={`w-full h-48 flex items-center justify-center ${coverBgClass}`}>
-                <svg className={`w-16 h-16 ${
-                  theme === 'dark' ? 'text-green-500/40' : 'text-[#22cb0b]/40'
-                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+              <div 
+                className={`relative w-full h-48 flex flex-col items-center justify-center overflow-hidden ${coverEmptyBgClass} cursor-pointer border-2 border-dashed ${
+                  theme === 'dark'
+                    ? `${isDragging ? 'border-green-500 bg-gray-700/50' : 'border-gray-600 hover:border-green-500'}`
+                    : `${isDragging ? 'border-[#22cb0b] bg-green-100/50' : 'border-green-200 hover:border-[#22cb0b]'}`
+                } transition-all`}
+                onClick={() => !isUploading && triggerFileInput()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isUploading) setIsDragging(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                  
+                  if (isUploading) return;
+                  
+                  const file = e.dataTransfer.files[0];
+                  if (file && file.type.startsWith('image/')) {
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert("Image size too large. Please select an image under 5MB.");
+                      return;
+                    }
+                    await uploadImage(file);
+                  }
+                }}
+              >
+                {isUploading ? (
+                  <>
+                    <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin border-green-500"></div>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Uploading image...
+                    </p>
+                  </>
+                ) : imageError ? (
+                  <>
+                    <svg className={`w-16 h-16 ${theme === 'dark' ? 'text-red-500/40' : 'text-red-500/40'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Image failed to load. Click or drag to replace.
+                    </p>
+                    <button
+                      onClick={triggerFileInput}
+                      className={`mt-3 px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
+                        theme === 'dark'
+                          ? 'bg-gray-700 text-green-300 hover:bg-gray-600'
+                          : 'bg-green-100 text-[#0a7e04] hover:bg-green-200'
+                      }`}
+                    >
+                      Select Image
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <svg className={`w-16 h-16 ${coverIconClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className={`mt-2 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Drag & drop an image here or click to select
+                    </p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Supports: JPG, PNG, GIF, WEBP (Max 5MB)
+                    </p>
+                  </>
+                )}
               </div>
             )}
+            
+            {/* Hidden file input */}
+            <input
+              type="file"
+              id="addCoverImageInput"
+              accept="image/*"
+              className="hidden"
+              disabled={isUploading}
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (file && !isUploading) {
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert("Image size too large. Please select an image under 5MB.");
+                    return;
+                  }
+                  await uploadImage(file);
+                }
+                e.target.value = ''; // Reset input
+              }}
+            />
           </div>
 
           {/* Content area */}
@@ -347,13 +524,17 @@ const Add = () => {
                 name="cover"
                 value={book.cover}
                 onChange={handleChange}
-                placeholder="Paste image URL..."
+                placeholder="Paste image URL... (Optional)"
+                disabled={isUploading}
                 className={`w-full px-0 py-3 text-sm border-0 border-b-2 outline-none bg-transparent transition-colors ${
                   theme === 'dark' 
-                    ? 'border-gray-700 focus:border-green-500 text-gray-200 placeholder-gray-500' 
-                    : 'border-green-100 focus:border-[#22cb0b] text-gray-800'
+                    ? 'border-gray-700 focus:border-green-500 text-gray-200 placeholder-gray-500 disabled:opacity-50' 
+                    : 'border-green-100 focus:border-[#22cb0b] text-gray-800 disabled:opacity-50'
                 }`}
               />
+              <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                Leave empty for no cover image
+              </p>
             </div>
 
             {/* Title input */}
@@ -389,7 +570,7 @@ const Add = () => {
                 name="category"
                 value={book.category}
                 onChange={handleChange}
-                placeholder="Add a category..."
+                placeholder="Add a category... (Optional)"
                 className={`flex-1 px-0 py-2 text-base font-medium border-0 outline-none bg-transparent ${
                   theme === 'dark' ? 'text-gray-200 placeholder-gray-500' : 'text-gray-800'
                 }`}
@@ -534,10 +715,11 @@ const Add = () => {
             }`}>
               <button
                 onClick={() => navigate("/allnotes")}
+                disabled={isUploading}
                 className={`px-6 py-3 font-semibold border-2 rounded-xl transition ${
                   theme === 'dark'
-                    ? 'text-green-300 border-gray-700 hover:bg-gray-700'
-                    : 'text-[#0a7e04] border-green-100 hover:bg-green-50'
+                    ? 'text-green-300 border-gray-700 hover:bg-gray-700 disabled:opacity-50 disabled:hover:bg-transparent'
+                    : 'text-[#0a7e04] border-green-100 hover:bg-green-50 disabled:opacity-50 disabled:hover:bg-transparent'
                 }`}
               >
                 Cancel
@@ -545,9 +727,12 @@ const Add = () => {
 
               <button
                 onClick={handleClick}
-                className={`px-8 py-3 font-bold text-white rounded-xl shadow-lg hover:shadow-xl transition ${addButtonClass}`}
+                disabled={isUploading}
+                className={`px-8 py-3 font-bold text-white rounded-xl shadow-lg hover:shadow-xl transition ${addButtonClass} ${
+                  isUploading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                Add Note
+                {isUploading ? 'Uploading...' : 'Add Note'}
               </button>
             </div>
 
