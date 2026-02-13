@@ -14,6 +14,8 @@ const Add = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState(null);
 
   const navigate = useNavigate();
   const editorRef = useRef(null);
@@ -76,6 +78,85 @@ const Add = () => {
   const coverIconClass = theme === 'dark'
     ? 'text-green-500/40'
     : 'text-[#22cb0b]/40';
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = 'en-US';
+      
+      recognitionInstance.onresult = (event) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        // Insert the recognized speech into the editor
+        if (editorRef.current) {
+          const selection = window.getSelection();
+          const range = selection.getRangeAt(0);
+          
+          // If there's no cursor position, append to the end
+          if (!selection.anchorNode) {
+            const textNode = document.createTextNode(finalTranscript || interimTranscript);
+            editorRef.current.appendChild(textNode);
+          } else {
+            // Insert at cursor position
+            const textNode = document.createTextNode(finalTranscript || interimTranscript);
+            range.deleteContents();
+            range.insertNode(textNode);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+          
+          // Trigger editor change
+          handleEditorChange();
+        }
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+      
+      setRecognition(recognitionInstance);
+    } else {
+      console.warn('Speech recognition not supported in this browser');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Add ignore comment to fix ESLint warning
+
+  // Voice control functions
+  const toggleListening = () => {
+    if (!recognition) {
+      alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+      return;
+    }
+    
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+    } else {
+      recognition.start();
+      setIsListening(true);
+    }
+  };
 
   // Image upload function - FROM UPDATE PAGE
   const uploadImage = async (file) => {
@@ -681,6 +762,34 @@ const Add = () => {
                     <path fillRule="evenodd" d="M4 5a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm3 5a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z" clipRule="evenodd" />
                   </svg>
                 </button>
+              </div>
+
+              {/* Voice to Text Button */}
+              <div className="flex items-center gap-1 ml-auto">
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition-all ${
+                    theme === 'dark'
+                      ? `${isListening ? 'bg-red-600 border-red-700 animate-pulse' : 'bg-gray-800 border-gray-600'} hover:bg-gray-700 text-gray-200`
+                      : `${isListening ? 'bg-red-500 border-red-600 text-white animate-pulse' : 'bg-white border-green-200'} hover:bg-green-100 text-black`
+                  }`}
+                  title={isListening ? 'Stop recording' : 'Start voice typing'}
+                >
+                  <svg 
+                    className="w-4 h-4" 
+                    fill="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                  </svg>
+                </button>
+                {isListening && (
+                  <span className={`text-xs font-medium ${theme === 'dark' ? 'text-red-400' : 'text-red-500'} animate-pulse ml-1`}>
+                    Recording...
+                  </span>
+                )}
               </div>
             </div>
 
