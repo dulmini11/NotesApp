@@ -102,21 +102,27 @@ const Add = () => {
           }
         }
         
-        // SIMPLER: Always append to the end of the editor
         if (editorRef.current) {
           const textToInsert = finalTranscript || interimTranscript;
           if (textToInsert) {
-            // Add a space before if the editor already has content
-            const currentContent = editorRef.current.innerText;
-            const insertText = currentContent.length > 0 && !currentContent.endsWith(' ') 
-              ? ' ' + textToInsert 
-              : textToInsert;
+            // Check if we need to add a space
+            const needsSpace = editorRef.current.innerText.length > 0 && 
+                              !editorRef.current.innerText.endsWith(' ');
             
-            // Append text
-            editorRef.current.innerHTML += insertText;
+            const finalText = needsSpace ? ' ' + textToInsert : textToInsert;
             
-            // Scroll to bottom
-            editorRef.current.scrollTop = editorRef.current.scrollHeight;
+            // Use insertNode at the end to preserve HTML
+            const range = document.createRange();
+            const sel = window.getSelection();
+            
+            range.selectNodeContents(editorRef.current);
+            range.collapse(false); // Collapse to end
+            
+            sel.removeAllRanges();
+            sel.addRange(range);
+            
+            // Insert text at cursor (which is at the end)
+            document.execCommand('insertText', false, finalText);
             
             // Trigger editor change
             handleEditorChange();
