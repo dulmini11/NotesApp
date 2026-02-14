@@ -102,27 +102,25 @@ const Add = () => {
           }
         }
         
-        // Insert the recognized speech into the editor
+        // SIMPLER: Always append to the end of the editor
         if (editorRef.current) {
-          const selection = window.getSelection();
-          const range = selection.getRangeAt(0);
-          
-          // If there's no cursor position, append to the end
-          if (!selection.anchorNode) {
-            const textNode = document.createTextNode(finalTranscript || interimTranscript);
-            editorRef.current.appendChild(textNode);
-          } else {
-            // Insert at cursor position
-            const textNode = document.createTextNode(finalTranscript || interimTranscript);
-            range.deleteContents();
-            range.insertNode(textNode);
-            range.collapse(false);
-            selection.removeAllRanges();
-            selection.addRange(range);
+          const textToInsert = finalTranscript || interimTranscript;
+          if (textToInsert) {
+            // Add a space before if the editor already has content
+            const currentContent = editorRef.current.innerText;
+            const insertText = currentContent.length > 0 && !currentContent.endsWith(' ') 
+              ? ' ' + textToInsert 
+              : textToInsert;
+            
+            // Append text
+            editorRef.current.innerHTML += insertText;
+            
+            // Scroll to bottom
+            editorRef.current.scrollTop = editorRef.current.scrollHeight;
+            
+            // Trigger editor change
+            handleEditorChange();
           }
-          
-          // Trigger editor change
-          handleEditorChange();
         }
       };
       
