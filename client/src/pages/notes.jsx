@@ -128,11 +128,15 @@ const Notes = () => {
   };
 
   const monthDays = getMonthDays();
-  const recentNotes = notes
-    .slice()
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5);
-  const pinnedCount = notes.filter(note => note.isPinned).length;
+  const recentNotes = Array.isArray(notes) 
+    ? [...notes]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+    : [];
+    
+  const pinnedCount = Array.isArray(notes) 
+    ? notes.filter(note => note.isPinned).length 
+    : 0;
 
   // Theme-based background classes
   const mainBgClass = theme === 'dark' 
@@ -337,7 +341,7 @@ const Notes = () => {
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {notes
+                    {Array.isArray(notes) && notes
                       .slice()
                       .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
                       .slice(0, 6)
