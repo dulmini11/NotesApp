@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar";
 import { Calendar, Sparkles, CheckSquare, Archive as ArchiveIcon } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 import NoteCard from "../components/NoteCard";
+import DeleteConfirmation from "../components/DeleteConfirmation"; // Import the delete confirmation
 import AllNote from "../assets/allnote.mp4";
 import { useTheme } from "../contexts/ThemeContext"; // Add theme context
 
@@ -17,6 +18,11 @@ const AllNotes = () => {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [isSidebarMinimized] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
+  
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
+  
   const expanded = !isSidebarMinimized || isSidebarHovered;
 
   const capitalizeFirst = (text) => {
@@ -48,6 +54,20 @@ const AllNotes = () => {
       setNotes(notes.filter(n => n.idNote !== id));
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  // Function to open delete confirmation
+  const confirmDelete = (id) => {
+    setNoteToDelete(id);
+    setShowDeleteConfirm(true);
+  };
+
+  // Function to handle confirmed delete
+  const handleConfirmedDelete = () => {
+    if (noteToDelete) {
+      handleDelete(noteToDelete);
+      setNoteToDelete(null);
     }
   };
 
@@ -195,6 +215,13 @@ const AllNotes = () => {
     ? 'text-gray-300'
     : 'text-gray-800';
 
+  // Get the title of the note being deleted for the confirmation message
+  const getNoteTitleForDelete = () => {
+    if (!noteToDelete) return '';
+    const note = notes.find(n => n.idNote === noteToDelete);
+    return note ? note.title : '';
+  };
+
   // Render grouped content
   const renderContent = () => {
     if (sortBy === 'name') {
@@ -217,7 +244,7 @@ const AllNotes = () => {
                 key={item.idNote}
                 note={item}
                 onPin={handlePin}
-                onDelete={handleDelete}
+                onDelete={confirmDelete}
                 onArchive={handleArchive}
               />
             ))}
@@ -241,7 +268,7 @@ const AllNotes = () => {
                   key={item.idNote}
                   note={item}
                   onPin={handlePin}
-                  onDelete={handleDelete}
+                  onDelete={confirmDelete}
                   onArchive={handleArchive}
                 />
               ))}
@@ -264,7 +291,7 @@ const AllNotes = () => {
                 key={item.idNote}
                 note={item}
                 onPin={handlePin}
-                onDelete={handleDelete}
+                onDelete={confirmDelete}
                 onArchive={handleArchive}
               />
             ))}
@@ -280,7 +307,7 @@ const AllNotes = () => {
               key={item.idNote}
               note={item}
               onPin={handlePin}
-              onDelete={handleDelete}
+              onDelete={confirmDelete}
               onArchive={handleArchive}
             />
           ))}
@@ -424,6 +451,17 @@ const AllNotes = () => {
           renderContent()
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmation
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setNoteToDelete(null);
+        }}
+        onConfirm={handleConfirmedDelete}
+        noteTitle={getNoteTitleForDelete()}
+      />
     </div>
   );
 };

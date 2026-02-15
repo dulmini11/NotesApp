@@ -6,6 +6,7 @@ import NoteCard from "../components/NoteCard";
 import { ChevronLeft, ChevronRight, Clock, TrendingUp, Sparkles, Eye, FileText, Pin, Calendar, Zap } from "lucide-react";
 import LeafVideo from "../assets/leaf1.mp4";
 import { useTheme } from "../contexts/ThemeContext"; // Add this import
+import DeleteConfirmation from "../components/DeleteConfirmation"; // Import the delete confirmation
 
 const Notes = () => {
   const { theme } = useTheme(); // Get current theme
@@ -16,6 +17,10 @@ const Notes = () => {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [isSidebarMinimized] = useState(true);
   const expanded = !isSidebarMinimized || isSidebarHovered;
+    
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
 
   // Update time every second
   useEffect(() => {
@@ -64,6 +69,20 @@ const Notes = () => {
       setNotes(notes.filter(n => n.idNote !== id));
     } catch (err) {
       console.log(err);
+    }
+  };
+  
+  // Function to open delete confirmation
+  const confirmDelete = (id) => {
+    setNoteToDelete(id);
+    setShowDeleteConfirm(true);
+  };
+
+  // Function to handle confirmed delete
+  const handleConfirmedDelete = () => {
+    if (noteToDelete) {
+      handleDelete(noteToDelete);
+      setNoteToDelete(null);
     }
   };
 
@@ -158,6 +177,13 @@ const Notes = () => {
   const recentNotesBgClass = theme === 'dark'
     ? 'bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800'
     : 'bg-gradient-to-br from-white via-green-50 to-white';
+
+  // Get the title of the note being deleted for the confirmation message
+  const getNoteTitleForDelete = () => {
+    if (!noteToDelete) return '';
+    const note = notes.find(n => n.idNote === noteToDelete);
+    return note ? note.title : '';
+  };
 
   return (
     <div className={`flex min-h-screen ${mainBgClass} transition-colors duration-300`}>
@@ -350,7 +376,7 @@ const Notes = () => {
                           key={item.idNote}
                           note={item}
                           onPin={handlePin}
-                          onDelete={handleDelete}
+                          onDelete={confirmDelete}
                         />
                       ))}
                   </div>
@@ -677,6 +703,17 @@ const Notes = () => {
           </div>
         </div>
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmation
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setNoteToDelete(null);
+        }}
+        onConfirm={handleConfirmedDelete}
+        noteTitle={getNoteTitleForDelete()}
+      />
     </div>
   );
 };

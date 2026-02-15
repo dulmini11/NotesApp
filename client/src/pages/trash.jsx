@@ -231,21 +231,21 @@ const Trash = () => {
             <h3 className={`text-lg md:text-xl font-bold mb-2 text-center ${modalTitleClass}`}>
               Delete Permanently?
             </h3>
-            <p className={`text-sm mb-6 md:mb-8 text-center leading-relaxed ${modalTextClass}`}>
+            <p className={`text-md mb-6 md:mb-8 text-center leading-relaxed ${modalTextClass}`}>
               This note will be deleted forever. You won't be able to recover it.
             </p>
             
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            {/* Buttons - FIXED: Centered and equal sizes */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <button
                 onClick={handlePermanentDelete}
-                className="py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-sm text-sm md:text-base"
+                className="w-full sm:w-auto flex-1 py-3 px-6 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-sm text-sm md:text-base text-center"
               >
                 Delete Forever
               </button>
               <button
                 onClick={cancelDelete}
-                className={`py-3 px-4 rounded-xl font-semibold transition-colors text-sm md:text-base ${cancelBtnBgClass}`}
+                className={`w-full sm:w-auto flex-1 py-3 px-6 rounded-xl font-semibold transition-colors text-sm md:text-base text-center ${cancelBtnBgClass}`}
               >
                 Cancel
               </button>

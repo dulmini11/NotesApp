@@ -7,6 +7,7 @@ import SearchBar from "../components/SearchBar";
 import pinnoteVideo from "../assets/pinnote.mp4";
 import { Sparkles, Pin } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
+import DeleteConfirmation from "../components/DeleteConfirmation"; // Import the delete confirmation
 
 const PinnedNotes = () => {
   const { theme } = useTheme();
@@ -17,6 +18,10 @@ const PinnedNotes = () => {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [isSidebarMinimized] = useState(true);
   const expanded = !isSidebarMinimized || isSidebarHovered;
+    
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
 
   // Theme-based styling - FIXED: Added light mode background
   const mainBgClass = theme === 'dark' 
@@ -51,6 +56,13 @@ const PinnedNotes = () => {
     ? 'from-gray-600 to-gray-900/20'
     : 'from-green-100 to-emerald-300/20';
 
+  // Get the title of the note being deleted for the confirmation message
+  const getNoteTitleForDelete = () => {
+    if (!noteToDelete) return '';
+    const note = notes.find(n => n.idNote === noteToDelete);
+    return note ? note.title : '';
+  };
+
   useEffect(() => {
     const fetchPinnedNotes = async () => {
       try {
@@ -65,10 +77,24 @@ const PinnedNotes = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8800/note/${id}`);
-      setNotes((prev) => prev.filter((n) => n.idNote !== id));
+      await axios.delete("http://localhost:8800/note/" + id);
+      setNotes(notes.filter(n => n.idNote !== id));
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  // Function to open delete confirmation
+  const confirmDelete = (id) => {
+    setNoteToDelete(id);
+    setShowDeleteConfirm(true);
+  };
+
+  // Function to handle confirmed delete
+  const handleConfirmedDelete = () => {
+    if (noteToDelete) {
+      handleDelete(noteToDelete);
+      setNoteToDelete(null);
     }
   };
 
@@ -196,11 +222,22 @@ const PinnedNotes = () => {
         ) : (
           <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 mb-8">
             {sortedNotes.map((item) => (
-              <NoteCard key={item.idNote} note={item} onPin={handlePin} onDelete={handleDelete} />
+              <NoteCard key={item.idNote} note={item} onPin={handlePin} onDelete={confirmDelete} />
             ))}
           </div>
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmation
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setNoteToDelete(null);
+        }}
+        onConfirm={handleConfirmedDelete}
+        noteTitle={getNoteTitleForDelete()}
+      />
     </div>
   );
 };
