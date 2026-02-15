@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, X, Trash2 } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const DeleteConfirmation = ({ isOpen, onClose, onConfirm, noteTitle }) => {
@@ -39,10 +39,6 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm, noteTitle }) => {
   const iconBgClass = theme === 'dark'
     ? 'bg-amber-900/40'
     : 'bg-amber-100';
-
-  const borderClass = theme === 'dark'
-    ? 'border-gray-700'
-    : 'border-gray-200';
 
   return (
     <div 

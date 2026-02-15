@@ -45,14 +45,6 @@ const NoteCard = ({ note, onPin, onDelete, onLock, onArchive }) => {
     ? 'text-gray-300'
     : 'text-amber-900';
 
-  const editBtnClass = theme === 'dark'
-    ? 'from-green-600 to-green-800 hover:from-green-500 hover:to-green-700'
-    : 'from-[#0ad128] to-[#188529] hover:from-[#22cb0b] hover:to-[#1c930c]';
-
-  const deleteBtnClass = theme === 'dark'
-    ? 'from-amber-800 to-red-800 hover:from-amber-700 hover:to-amber-800'
-    : 'from-amber-950 to-red-900 hover:from-amber-950 hover:to-amber-900';
-
   const descriptionTextClass = theme === 'dark'
     ? 'text-gray-400'
     : 'text-gray-600';
