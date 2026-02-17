@@ -5,12 +5,12 @@ import Sidebar from "../components/Sidebar";
 import { Calendar, Sparkles, CheckSquare, Archive as ArchiveIcon } from "lucide-react";
 import SearchBar from "../components/SearchBar";
 import NoteCard from "../components/NoteCard";
-import DeleteConfirmation from "../components/DeleteConfirmation"; // Import the delete confirmation
+import DeleteConfirmation from "../components/DeleteConfirmation";
 import AllNote from "../assets/allnote.mp4";
-import { useTheme } from "../contexts/ThemeContext"; // Add theme context
+import { useTheme } from "../contexts/ThemeContext";
 
 const AllNotes = () => {
-  const { theme } = useTheme(); // Get theme
+  const { theme } = useTheme();
   const [notes, setNotes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState('date');
@@ -93,11 +93,25 @@ const AllNotes = () => {
       await axios.put(`http://localhost:8800/note/${id}/archive`, {
         isArchived: !currentStatus,
       });
-      setNotes(prev =>
-        prev.map(note =>
-          note.idNote === id ? { ...note, isArchived: !currentStatus } : note
-        )
-      );
+      
+      // If we're in active notes view and we archive a note, remove it from the list
+      if (!showArchived && !currentStatus) {
+        // Archiving from active view - remove the note
+        setNotes(prev => prev.filter(note => note.idNote !== id));
+      } 
+      // If we're in archived view and we restore a note, remove it from the list
+      else if (showArchived && currentStatus) {
+        // Restoring from archived view - remove the note
+        setNotes(prev => prev.filter(note => note.idNote !== id));
+      }
+      else {
+        // Otherwise update the note's archived status
+        setNotes(prev =>
+          prev.map(note =>
+            note.idNote === id ? { ...note, isArchived: !currentStatus } : note
+          )
+        );
+      }
     } catch (err) {
       console.log(err);
     }
@@ -220,6 +234,12 @@ const AllNotes = () => {
     if (!noteToDelete) return '';
     const note = notes.find(n => n.idNote === noteToDelete);
     return note ? note.title : '';
+  };
+
+  // Toggle between active and archived views
+  const toggleArchiveView = () => {
+    setShowArchived(!showArchived);
+    setSearchQuery(""); // Clear search when switching views
   };
 
   // Render grouped content
@@ -351,7 +371,7 @@ const AllNotes = () => {
           
           {/* BUTTONS SECTION */}
           <div className="flex flex-col xs:flex-row items-center gap-3 mb-5">
-            {notes.length >= 1 && (
+            {notes.length >= 1 && !showArchived && (
               <video
                 src={AllNote}
                 autoPlay
@@ -368,7 +388,7 @@ const AllNotes = () => {
             <div className="flex items-center gap-2 relative z-10">
               {/* Archive Toggle Button */}
               <button
-                onClick={() => setShowArchived(!showArchived)}
+                onClick={toggleArchiveView}
                 className={`inline-flex items-center gap-2 font-bold py-2 px-4 md:py-3 md:px-6 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base ${
                   showArchived 
                     ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800' 
@@ -386,17 +406,19 @@ const AllNotes = () => {
                 </span>
               </button>
               
-              {/* New Note Button */}
-              <Link
-                to="/add"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-400 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
-              >
-                <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span className="hidden xs:inline">New Note</span>
-                <span className="xs:hidden">Add</span>
-              </Link>
+              {/* New Note Button - only show in active view */}
+              {!showArchived && (
+                <Link
+                  to="/add"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#22cb0b] to-green-400 hover:from-[#22cb0b] hover:to-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
+                >
+                  <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="hidden xs:inline">New Note</span>
+                  <span className="xs:hidden">Add</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
