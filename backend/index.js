@@ -242,20 +242,28 @@ app.get("/note/archived", (req, res) => {
     });
 });
 
-// Archive a Note
+// Archive or Unarchive a Note
 app.put("/note/:id/archive", (req, res) => {
     const noteId = req.params.id;
-    const { isArchived } = req.body;
+    const { isArchived } = req.body; // true = archive, false = unarchive
     
     const q = "UPDATE note SET isArchived = ? WHERE idNote = ?";
     
     db.query(q, [isArchived, noteId], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json({ 
+        if (err) {
+            return res.status(500).json(err);
+        }
+        return res.status(200).json({ 
             message: isArchived ? "Note archived" : "Note unarchived",
             isArchived: isArchived 
         });
     });
+});
+
+// Start Server
+app.listen(8800, () => {
+    console.log("Connected to backend at port 8800!");
+    console.log("Uploads directory:", uploadDir);
 });
 
 // Error handling middleware for multer
