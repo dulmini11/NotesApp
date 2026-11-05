@@ -1,280 +1,251 @@
+import "dotenv/config";
 import express from "express";
-import mysql from "mysql2";
+import mongoose from "mongoose";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { fileURLToPath } from "url";
+import fs from "fs";
 
 const app = express();
+const PORT = process.env.PORT || 8800;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// MySQL Connection
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "node_app",
-    port: 3307 
-});
-
-// Connect to MySQL
-db.connect((err) => {
-    if (err) {
-        console.log("MySQL Connection Error:", err);
-        return;
-    }
-    console.log("MySQL connected to database:", db.config.database);
-});
-
-// Create uploads directory if it doesn't exist
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-    console.log('Uploads directory created');
-}
-
-// Configure multer for file upload
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
+// ---------- MongoDB ----------
+const noteSchema = new mongoose.Schema(
+    {
+        title: { type: String, required: true },
+        category: { type: String, default: "Uncategorized" },
+        desc: { type: String, default: "" },
+        cover: { type: String, default: "" },
+        isPinned: { type: Boolean, default: false },
+        isArchived: { type: Boolean, default: false },
+        isDeleted: { type: Boolean, default: false },
     },
-    filename: function (req, file, cb) {
-        // Create unique filename with timestamp + random number + original extension
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, uniqueSuffix + ext);
+    {
+        timestamps: true, // adds createdAt / updatedAt
+        toJSON: {
+            // The frontend uses `idNote`, so expose _id under that name
+            transform: (_doc, ret) => {
+                ret.idNote = ret._id.toString();
+                delete ret._id;
+                delete ret.__v;
+                return ret;
+            },
+        },
     }
-});
+);
 
-// File filter to only allow images
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files are allowed!'), false);
+const Note = mongoose.model("Note", noteSchema);
+
+// Rejects invalid ids before they reach MongoDB (would otherwise throw CastError)
+const validId = (req, res, next) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+        return res.status(404).json({ message: "Note not found" });
     }
+    next();
 };
 
-const upload = multer({ 
-    storage: storage,
-    limits: { 
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+// ---------- Uploads ----------
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log("Uploads directory created");
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
     },
-    fileFilter: fileFilter
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+    if (allowedTypes.includes(file.mimetype)) cb(null, true);
+    else cb(new Error("Only image files are allowed!"), false);
+};
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter,
 });
 
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use("/uploads", express.static(uploadDir));
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(uploadDir));
-
-// Test Route
+// ---------- Routes ----------
 app.get("/", (req, res) => {
     res.json("Hello! This is the backend");
 });
 
-// Image upload endpoint
-app.post("/upload", upload.single('image'), (req, res) => {
+app.post("/upload", upload.single("image"), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+    }
+    const imageUrl = `${BASE_URL}/uploads/${req.file.filename}`;
+    res.json({
+        url: imageUrl,
+        filename: req.file.filename,
+        message: "Image uploaded successfully",
+    });
+});
+
+// Get all notes (not in trash)
+app.get("/note", async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
-        }
-        
-        // Generate the URL for the uploaded image
-        const imageUrl = `http://localhost:8800/uploads/${req.file.filename}`;
-        
-        console.log('File uploaded successfully:', req.file.filename);
-        console.log('Image URL:', imageUrl);
-        
-        res.json({ 
-            url: imageUrl,
-            filename: req.file.filename,
-            message: "Image uploaded successfully" 
-        });
-    } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: error.message || "Upload failed" });
+        const notes = await Note.find({ isDeleted: false }).sort({ createdAt: -1 });
+        res.json(notes);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
-// Get All Notes
-app.get("/note", (req, res) => {
-    const q = "SELECT * FROM note WHERE isDeleted = 0";
-
-    db.query(q, (err, data) => {
-        if (err) return res.json(err);
-        return res.json(data);
-    });
-});
-
-// Add a Note
-app.post("/note", (req, res) => {
-    const q = "INSERT INTO note (`title`, `category`, `desc`, `cover`) VALUES (?)";
-
-    const values = [
-        req.body.title,
-        req.body.category || "Uncategorized",
-        req.body.desc || "",
-        req.body.cover || "",
-    ];
-
-    db.query(q, [values], (err, data) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: err.message });
-        }
-
-        return res.json({
-            message: "Note added successfully!",
-            insertedId: data.insertId
-        });
-    });
-});
-
-app.delete("/note/:id", (req, res) => {
-    const noteId = req.params.id;
-    const q = "UPDATE note SET isDeleted = 1 WHERE idNote = ?";
-
-    db.query(q, [noteId], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("Note moved to trash.");
-    });
-});
-
-app.put("/note/:id", (req, res) => {
-    const noteId = req.params.id;
-    const q = "UPDATE note SET `title`=?, `category`=?, `desc`=?, `cover`=? WHERE idNote = ?";
-
-    const values = [
-        req.body.title,
-        req.body.category,
-        req.body.desc,
-        req.body.cover
-    ];
-
-    db.query(q, [...values, noteId], (err, data) => {
-        if (err) return res.json(err);
-        return res.json("Note has been updated successfully.");
-    });
-});
-
-// Pin or unpin a note
-app.put("/note/:id/pin", (req, res) => {
-  const noteId = req.params.id;
-  const { isPinned } = req.body; // true or false
-  
-  const q = "UPDATE note SET isPinned = ? WHERE idNote = ?";
-  
-  db.query(q, [isPinned, noteId], (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json(err);
+// Trash notes (must be ABOVE /note/:id)
+app.get("/note/trash", async (req, res) => {
+    try {
+        const notes = await Note.find({ isDeleted: true }).sort({ updatedAt: -1 });
+        res.json(notes);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-    return res.status(200).json({ 
-      message: "Note pin status updated",
-      isPinned: isPinned 
-    });
-  });
 });
 
-// Start Server
-app.listen(8800, () => {
-    console.log("Connected to backend at port 8800!");
-    console.log("Uploads directory:", uploadDir);
+// Archived notes (must be ABOVE /note/:id)
+app.get("/note/archived", async (req, res) => {
+    try {
+        const notes = await Note.find({ isArchived: true, isDeleted: false }).sort({ createdAt: -1 });
+        res.json(notes);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// TRASH NOTES (must be ABOVE :id)
-app.get("/note/trash", (req, res) => {
-    const q = "SELECT * FROM note WHERE isDeleted = 1";
-    db.query(q, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json(data);
-    });
+// Get single note
+app.get("/note/:id", validId, async (req, res) => {
+    try {
+        const note = await Note.findOne({ _id: req.params.id, isDeleted: false });
+        if (!note) return res.status(404).json({ message: "Note not found" });
+        res.json(note);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// GET SINGLE NOTE
-app.get("/note/:id", (req, res) => {
-    const noteId = req.params.id;
-    const q = "SELECT * FROM note WHERE idNote = ? AND isDeleted = 0";
-
-    db.query(q, [noteId], (err, data) => {
-        if (err) return res.json(err);
-        if (data.length === 0)
-            return res.status(404).json({ message: "Note not found" });
-        return res.json(data[0]);
-    });
-});
-
-app.delete("/note/:id/permanent", (req, res) => {
-    const noteId = req.params.id;
-    const q = "DELETE FROM note WHERE idNote = ?";
-
-    db.query(q, [noteId], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("Note permanently deleted.");
-    });
-});
-
-app.put("/note/:id/restore", (req, res) => {
-    const noteId = req.params.id;
-    const q = "UPDATE note SET isDeleted = 0 WHERE idNote = ?";
-
-    db.query(q, [noteId], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("Note restored successfully.");
-    });
-});
-
-// GET Archived Notes
-app.get("/note/archived", (req, res) => {
-    const q = "SELECT * FROM note WHERE isArchived = 1 AND isDeleted = 0";
-    
-    db.query(q, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json(data);
-    });
-});
-
-// Archive or Unarchive a Note
-app.put("/note/:id/archive", (req, res) => {
-    const noteId = req.params.id;
-    const { isArchived } = req.body; // true = archive, false = unarchive
-    
-    const q = "UPDATE note SET isArchived = ? WHERE idNote = ?";
-    
-    db.query(q, [isArchived, noteId], (err, data) => {
-        if (err) {
-            return res.status(500).json(err);
-        }
-        return res.status(200).json({ 
-            message: isArchived ? "Note archived" : "Note unarchived",
-            isArchived: isArchived 
+// Add a note
+app.post("/note", async (req, res) => {
+    try {
+        const note = await Note.create({
+            title: req.body.title,
+            category: req.body.category || "Uncategorized",
+            desc: req.body.desc || "",
+            cover: req.body.cover || "",
         });
-    });
+        res.json({ message: "Note added successfully!", insertedId: note._id.toString() });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// Start Server
-app.listen(8800, () => {
-    console.log("Connected to backend at port 8800!");
-    console.log("Uploads directory:", uploadDir);
+// Update a note
+app.put("/note/:id", validId, async (req, res) => {
+    try {
+        const { title, category, desc, cover } = req.body;
+        await Note.findByIdAndUpdate(req.params.id, { title, category, desc, cover });
+        res.json("Note has been updated successfully.");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// Error handling middleware for multer
+// Pin / unpin
+app.put("/note/:id/pin", validId, async (req, res) => {
+    try {
+        const isPinned = Boolean(req.body.isPinned);
+        await Note.findByIdAndUpdate(req.params.id, { isPinned });
+        res.json({ message: "Note pin status updated", isPinned });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Archive / unarchive
+app.put("/note/:id/archive", validId, async (req, res) => {
+    try {
+        const isArchived = Boolean(req.body.isArchived);
+        await Note.findByIdAndUpdate(req.params.id, { isArchived });
+        res.json({ message: isArchived ? "Note archived" : "Note unarchived", isArchived });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Restore from trash
+app.put("/note/:id/restore", validId, async (req, res) => {
+    try {
+        await Note.findByIdAndUpdate(req.params.id, { isDeleted: false });
+        res.json("Note restored successfully.");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Move to trash (soft delete)
+app.delete("/note/:id", validId, async (req, res) => {
+    try {
+        await Note.findByIdAndUpdate(req.params.id, { isDeleted: true });
+        res.json("Note moved to trash.");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Permanently delete
+app.delete("/note/:id/permanent", validId, async (req, res) => {
+    try {
+        await Note.findByIdAndDelete(req.params.id);
+        res.json("Note permanently deleted.");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Error handling middleware (multer etc.)
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
-        if (error.code === 'FILE_TOO_LARGE') {
-            return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+        if (error.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({ error: "File too large. Maximum size is 5MB." });
         }
         return res.status(400).json({ error: error.message });
-    } else if (error) {
-        return res.status(400).json({ error: error.message });
     }
+    if (error) return res.status(400).json({ error: error.message });
     next();
 });
+
+// ---------- Start ----------
+if (!process.env.MONGO_URI) {
+    console.error("MONGO_URI is missing. Add it to backend/.env");
+    process.exit(1);
+}
+
+mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("MongoDB connected to database:", mongoose.connection.name);
+        app.listen(PORT, () => {
+            console.log(`Connected to backend at port ${PORT}!`);
+        });
+    })
+    .catch((err) => {
+        console.error("MongoDB connection error:", err.message);
+        process.exit(1);
+    });
